@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hà Nội - Thành Phố Vì Hòa Bình | Cổ Kính & Modern</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Playfair Display for headers & Inter for body text -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        hanoi: {
+                            gold: '#c29b38',
+                            red: '#9b2c2c',
+                            deepred: '#7b1d1d',
+                            cream: '#fdfbf7',
+                            cardbg: '#faf6ee',
+                            dark: '#1a1815',
+                            moss: '#3a5a40'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #fdfbf7;
+            color: #1a1815;
+            background-image: radial-gradient(#e5decf 0.75px, transparent 0.75px);
+            background-size: 16px 16px;
+        }
+
+        .hanoi-pattern {
+            background: linear-gradient(135deg, #7b1d1d 0%, #9b2c2c 50%, #521212 100%);
+        }
+
+        .gold-border {
+            border-image: linear-gradient(to right, #c29b38, #f0d588, #c29b38) 1;
+        }
+
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 30px -10px rgba(123, 29, 29, 0.15);
+        }
+    </style>
+</head>
+<body class="font-sans leading-relaxed min-h-screen flex flex-col antialiased">
+
+    <!-- Thẻ ngữ nghĩa 1: <header> -->
+    <header class="hanoi-pattern text-white shadow-xl relative overflow-hidden border-b-4 border-hanoi-gold">
+        <!-- Overlay decorative vintage pattern -->
+        <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:12px_12px]"></div>
+
+        <nav class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center relative z-10">
+            <div class="flex items-center space-x-3">
+                <span class="text-3xl text-hanoi-gold"><i class="fa-solid fa-landmark"></i></span>
+                <span class="font-serif font-bold text-xl sm:text-2xl tracking-wider uppercase text-amber-100">Hà Nội Văn Hiến</span>
+            </div>
+            <div class="hidden sm:flex space-x-6 text-sm font-medium text-amber-100/90">
+                <a href="#thang-canh" class="hover:text-hanoi-gold transition">Danh Thắng</a>
+                <a href="#bo-suy-tap" class="hover:text-hanoi-gold transition">Thư Viện Ảnh</a>
+                <a href="#tim-hieu-them" class="hover:text-hanoi-gold transition">Tìm Hiểu Thêm</a>
+            </div>
+        </nav>
+
+        <div class="max-w-4xl mx-auto text-center px-4 py-16 sm:py-20 relative z-10">
+            <span class="inline-block px-3 py-1 bg-amber-500/20 text-amber-200 rounded-full text-xs sm:text-sm font-medium mb-4 backdrop-blur-sm border border-amber-400/30">
+                <i class="fa-solid fa-star mr-1"></i> Thủ Đô Ngàn Năm Văn Hiến
+            </span>
+            <h1 class="font-serif text-4xl sm:text-6xl font-bold tracking-tight text-white mb-4 leading-tight">
+                Khám Phá Vẻ Đẹp Hà Nội
+            </h1>
+            <p class="text-base sm:text-xl text-amber-100/90 max-w-2xl mx-auto font-light leading-relaxed">
+                Nơi hội tụ tinh hoa văn hóa, lịch sử cổ kính hòa quyện cùng nhịp sống hiện đại năng động của Thành phố Vì Hòa bình.
+            </p>
+        </div>
+    </header>
+
+    <!-- Thẻ ngữ nghĩa 2: <main> -->
+    <main class="max-w-6xl mx-auto px-4 py-12 flex-grow w-full">
+
+        <!-- Quick Interactive Search / Filter Bar -->
+        <div class="mb-12 bg-white p-4 rounded-xl shadow-md border border-amber-200/60 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center text-hanoi-deepred font-semibold">
+                <i class="fa-solid fa-compass mr-2 text-hanoi-gold"></i>
+                <span>Hướng Dẫn Trải Nghiệm Hà Nội</span>
+            </div>
+            <div class="relative w-full sm:w-72">
+                <input type="text" id="searchInput" onkeyup="filterContent()" placeholder="Tìm kiếm điểm đến, món ăn..." class="w-full pl-9 pr-4 py-2 text-sm bg-hanoi-cream rounded-lg border border-gray-300 focus:outline-none focus:border-hanoi-gold transition">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400 text-xs"></i>
+            </div>
+        </div>
+
+        <!-- Section: Top 3 Danh Lam Thắng Cảnh -->
+        <section id="thang-canh" class="mb-16 scroll-mt-8">
+            <div class="flex items-center space-x-3 mb-8">
+                <div class="w-2 h-8 bg-hanoi-gold rounded-full"></div>
+                <div>
+                    <h2 class="font-serif text-2xl sm:text-3xl font-bold text-hanoi-deepred">
+                        Top 3 Danh Lam Thắng Cảnh Không Thể Bỏ Qua
+                    </h2>
+                    <p class="text-sm text-gray-600">Những cột mốc lịch sử lâu đời làm nên biểu tượng thủ đô</p>
+                </div>
+            </div>
+
+            <!-- Danh sách có ít nhất 3 mục -->
+            <ol class="grid grid-cols-1 md:grid-cols-3 gap-6 list-none p-0">
+                <!-- Place 1 -->
+                <li class="filterable-item bg-hanoi-cardbg p-6 rounded-2xl border border-amber-900/10 shadow-sm card-hover flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 bg-hanoi-red text-white font-serif text-xl font-bold rounded-xl flex items-center justify-center mb-4 shadow-md">
+                            01
+                        </div>
+                        <h3 class="font-serif text-xl font-bold text-hanoi-dark mb-2 flex items-center">
+                            Hồ Hoàn Kiếm
+                        </h3>
+                        <p class="text-gray-700 text-sm leading-relaxed mb-4">
+                            Trái tim của thủ đô với Tháp Rùa cổ kính rêu phong và cầu Thê Húc màu đỏ son uốn lượn như dải lụa trên mặt nước xanh biếc.
+                        </p>
+                    </div>
+                    <div class="pt-4 border-t border-amber-900/10 flex justify-between items-center text-xs font-semibold text-hanoi-gold">
+                        <span><i class="fa-solid fa-location-dot mr-1"></i> Quận Hoàn Kiếm</span>
+                        <span class="bg-amber-100 text-amber-900 px-2 py-1 rounded">Miễn phí</span>
+                    </div>
+                </li>
+
+                <!-- Place 2 -->
+                <li class="filterable-item bg-hanoi-cardbg p-6 rounded-2xl border border-amber-900/10 shadow-sm card-hover flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 bg-hanoi-gold text-white font-serif text-xl font-bold rounded-xl flex items-center justify-center mb-4 shadow-md">
+                            02
+                        </div>
+                        <h3 class="font-serif text-xl font-bold text-hanoi-dark mb-2 flex items-center">
+                            Văn Miếu - Quốc Tử Giám
+                        </h3>
+                        <p class="text-gray-700 text-sm leading-relaxed mb-4">
+                            Trường đại học đầu tiên của Việt Nam, biểu tượng sáng ngời cho truyền thống hiếu học, nơi lưu giữ 82 bia Tiến sĩ Khuê Văn Các.
+                        </p>
+                    </div>
+                    <div class="pt-4 border-t border-amber-900/10 flex justify-between items-center text-xs font-semibold text-hanoi-gold">
+                        <span><i class="fa-solid fa-location-dot mr-1"></i> Quận Đống Đa</span>
+                        <span class="bg-amber-100 text-amber-900 px-2 py-1 rounded">Vé tham quan</span>
+                    </div>
+                </li>
+
+                <!-- Place 3 -->
+                <li class="filterable-item bg-hanoi-cardbg p-6 rounded-2xl border border-amber-900/10 shadow-sm card-hover flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 bg-hanoi-moss text-white font-serif text-xl font-bold rounded-xl flex items-center justify-center mb-4 shadow-md">
+                            03
+                        </div>
+                        <h3 class="font-serif text-xl font-bold text-hanoi-dark mb-2 flex items-center">
+                            Hoàng Thành Thăng Long
+                        </h3>
+                        <p class="text-gray-700 text-sm leading-relaxed mb-4">
+                            Di sản văn hóa thế giới UNESCO, quần thể di tích đồ sộ gắn liền với lịch sử phát triển nghìn năm của Thăng Long - Hà Nội.
+                        </p>
+                    </div>
+                    <div class="pt-4 border-t border-amber-900/10 flex justify-between items-center text-xs font-semibold text-hanoi-gold">
+                        <span><i class="fa-solid fa-location-dot mr-1"></i> Quận Ba Đình</span>
+                        <span class="bg-amber-100 text-amber-900 px-2 py-1 rounded">Di sản UNESCO</span>
+                    </div>
+                </li>
+            </ol>
+        </section>
+
+        <!-- Section: Bộ sưu tập 3 hình ảnh hợp lệ -->
+        <section id="bo-suy-tap" class="mb-16 scroll-mt-8">
+            <div class="flex items-center space-x-3 mb-8">
+                <div class="w-2 h-8 bg-hanoi-red rounded-full"></div>
+                <div>
+                    <h2 class="font-serif text-2xl sm:text-3xl font-bold text-hanoi-deepred">
+                        Bộ Sưu Tập Hình Ảnh Về Hà Nội
+                    </h2>
+                    <p class="text-sm text-gray-600">Ghi lại những khoảnh khắc đặc trưng và phong vị Hà Thành</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Image 1 -->
+                <figure class="filterable-item bg-white rounded-2xl overflow-hidden shadow-md border border-amber-900/10 card-hover flex flex-col">
+                    <div class="relative overflow-hidden group h-64 bg-gray-100">
+                        <img src="https://afamilycdn.com/150157425591193600/2023/3/26/vu-trung-16798095937691358742041-1679814733486-1679814734363749116043.jpeg" 
+                             alt="Cầu Thê Húc màu đỏ cổ kính soi bóng bên Hồ Gươm dưới vòm cây xanh ngắt" 
+                             class="w-full h-full object-cover group-hover:scale-105 transition duration-500 cursor-pointer"
+                             onclick="openLightbox(this.src, this.alt)"
+                             loading="lazy">
+                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white pointer-events-none">
+                            <i class="fa-solid fa-magnifying-glass-plus text-2xl"></i>
+                        </div>
+                    </div>
+                    <figcaption class="p-5 flex-grow flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-hanoi-red uppercase tracking-wider block mb-1">Kiến trúc & Cảnh quan</span>
+                            <p class="font-medium text-gray-800 text-sm">Cầu Thê Húc mộng mơ soi bóng nước Hồ Gươm cổ kính.</p>
+                        </div>
+                        <span class="text-xs text-gray-500 mt-3 block"><i class="fa-regular fa-image mr-1"></i> Nhấp để xem ảnh phóng to</span>
+                    </figcaption>
+                </figure>
+
+                <!-- Image 2 -->
+                <figure class="filterable-item bg-white rounded-2xl overflow-hidden shadow-md border border-amber-900/10 card-hover flex flex-col">
+                    <div class="relative overflow-hidden group h-64 bg-gray-100">
+                        <img src="https://cdn.tgdd.vn/Files/2022/01/25/1412805/cach-nau-pho-bo-nam-dinh-chuan-vi-thom-ngon-nhu-hang-quan-202201250313281452.jpg" 
+                             alt="Bát phở bò Hà Nội nóng hổi nghi ngút khói với nước dùng trong, nhiều thịt bò và hành lá tươi" 
+                             class="w-full h-full object-cover group-hover:scale-105 transition duration-500 cursor-pointer"
+                             onclick="openLightbox(this.src, this.alt)"
+                             loading="lazy">
+                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white pointer-events-none">
+                            <i class="fa-solid fa-magnifying-glass-plus text-2xl"></i>
+                        </div>
+                    </div>
+                    <figcaption class="p-5 flex-grow flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-hanoi-gold uppercase tracking-wider block mb-1">Ẩm thực truyền thống</span>
+                            <p class="font-medium text-gray-800 text-sm">Phở Hà Nội - Nét tinh túy độc đáo của văn hóa ẩm thực Việt.</p>
+                        </div>
+                        <span class="text-xs text-gray-500 mt-3 block"><i class="fa-regular fa-image mr-1"></i> Nhấp để xem ảnh phóng to</span>
+                    </figcaption>
+                </figure>
+
+                <!-- Image 3 -->
+                <figure class="filterable-item bg-white rounded-2xl overflow-hidden shadow-md border border-amber-900/10 card-hover flex flex-col">
+                    <div class="relative overflow-hidden group h-64 bg-gray-100">
+                        <img src="https://statics.vinpearl.com/thap-rua-ho-guom-2_1691857561.jpg" 
+                             alt="Tháp Rùa Hồ Gươm rực rỡ và lung linh phản chiếu ánh đèn đêm trên mặt nước trầm mặc" 
+                             class="w-full h-full object-cover group-hover:scale-105 transition duration-500 cursor-pointer"
+                             onclick="openLightbox(this.src, this.alt)"
+                             loading="lazy">
+                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white pointer-events-none">
+                            <i class="fa-solid fa-magnifying-glass-plus text-2xl"></i>
+                        </div>
+                    </div>
+                    <figcaption class="p-5 flex-grow flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-hanoi-moss uppercase tracking-wider block mb-1">Cảnh đêm Thủ Đô</span>
+                            <p class="font-medium text-gray-800 text-sm">Vẻ đẹp lung linh và uy nghiêm của Tháp Rùa khi màn đêm xuống.</p>
+                        </div>
+                        <span class="text-xs text-gray-500 mt-3 block"><i class="fa-regular fa-image mr-1"></i> Nhấp để xem ảnh phóng to</span>
+                    </figcaption>
+                </figure>
+            </div>
+        </section>
+
+        <!-- Section: Tìm Hiểu Thêm (Mở rộng chi tiết) -->
+        <section id="tim-hieu-them" class="bg-hanoi-cardbg p-8 sm:p-10 rounded-3xl border border-amber-900/10 shadow-sm scroll-mt-8">
+            <div class="flex items-center space-x-3 mb-8">
+                <div class="w-2 h-8 bg-hanoi-gold rounded-full"></div>
+                <div>
+                    <h2 class="font-serif text-2xl sm:text-3xl font-bold text-hanoi-deepred">
+                        Tìm Hiểu Thêm Về Hà Nội
+                    </h2>
+                    <p class="text-sm text-gray-600">Cẩm nang trọn bộ dành cho hành trình trải nghiệm</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                <!-- Article 1: Ẩm thực -->
+                <article class="filterable-item bg-white p-6 rounded-2xl border border-amber-100 shadow-sm">
+                    <div class="flex items-center text-hanoi-red mb-3">
+                        <i class="fa-solid fa-utensils text-xl mr-3"></i>
+                        <h3 class="font-serif text-lg font-bold text-hanoi-dark">1. Văn Hóa Ẩm Thực Rực Rỡ</h3>
+                    </div>
+                    <p class="text-gray-700 text-sm leading-relaxed mb-3">
+                        Ẩm thực Hà Nội nổi tiếng bởi sự tinh tế trong cách chế biến và hương vị thanh nhẹ. Ngoài món Phở trứ danh, du khách không nên bỏ qua Bún chả nướng than hoa, Chả cá Lăng thơm ngậy, Cốm làng Vòng đơm trong lá sen thơm mát hay một tách Cà phê trứng đậm đà.
+                    </p>
+                </article>
+
+                <!-- Article 2: Thời điểm du lịch -->
+                <article class="filterable-item bg-white p-6 rounded-2xl border border-amber-100 shadow-sm">
+                    <div class="flex items-center text-hanoi-gold mb-3">
+                        <i class="fa-solid fa-cloud-sun text-xl mr-3"></i>
+                        <h3 class="font-serif text-lg font-bold text-hanoi-dark">2. Thời Điểm Du Lịch Lý Tưởng</h3>
+                    </div>
+                    <p class="text-gray-700 text-sm leading-relaxed mb-3">
+                        Mùa thu Hà Nội (từ tháng 9 đến tháng 11) được xem là thời điểm quyến rũ nhất. Thời tiết mát mẻ, vạt nắng vàng dịu rọi qua tán lá vàng cùng hương hoa sữa nồng nàn lan tỏa khắp không gian các con phố cổ.
+                    </p>
+                </article>
+
+                <!-- Article 3: Phương tiện -->
+                <article class="filterable-item bg-white p-6 rounded-2xl border border-amber-100 shadow-sm">
+                    <div class="flex items-center text-hanoi-moss mb-3">
+                        <i class="fa-solid fa-bus text-xl mr-3"></i>
+                        <h3 class="font-serif text-lg font-bold text-hanoi-dark">3. Phương Tiện Di Chuyển Trải Nghiệm</h3>
+                    </div>
+                    <ul class="text-gray-700 text-sm space-y-2 list-disc list-inside">
+                        <li><strong>Xe buýt 2 tầng:</strong> Thưởng ngoạn toàn cảnh danh thắng từ trên cao.</li>
+                        <li><strong>Xích lô phố cổ:</strong> Dạo quanh 36 phố phường một cách thong dong.</li>
+                        <li><strong>Tàu điện Cát Linh - Hà Đông:</strong> Trải nghiệm nhịp sống đô thị hiện đại.</li>
+                    </ul>
+                </article>
+
+                <!-- Article 4: Liên kết hữu ích -->
+                <article class="filterable-item bg-white p-6 rounded-2xl border border-amber-100 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center text-blue-800 mb-3">
+                            <i class="fa-solid fa-link text-xl mr-3"></i>
+                            <h3 class="font-serif text-lg font-bold text-hanoi-dark">4. Kênh Thông Tin & Liên Kết Hữu Ích</h3>
+                        </div>
+                        <p class="text-gray-700 text-sm leading-relaxed mb-4">
+                            Cập nhật bản đồ du lịch, lịch trình sự kiện văn hóa và thông tin chính thống tại các cổng thông tin quốc gia:
+                        </p>
+                    </div>
+                    <ul class="space-y-3 text-sm">
+                        <li>
+                            <a href="https://vietnamtourism.gov.vn" target="_blank" rel="noopener noreferrer" 
+                               class="inline-flex items-center text-hanoi-deepred hover:text-hanoi-gold font-medium transition group">
+                                <i class="fa-solid fa-arrow-up-right-from-square mr-2 text-xs group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition"></i>
+                                Cục Du lịch Quốc gia Việt Nam
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://hanoi.gov.vn" target="_blank" rel="noopener noreferrer" 
+                               class="inline-flex items-center text-hanoi-deepred hover:text-hanoi-gold font-medium transition group">
+                                <i class="fa-solid fa-arrow-up-right-from-square mr-2 text-xs group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition"></i>
+                                Cổng thông tin điện tử Thành phố Hà Nội
+                            </a>
+                        </li>
+                    </ul>
+                </article>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Thẻ ngữ nghĩa 3: <footer> -->
+    <footer class="hanoi-pattern text-amber-100 py-8 border-t-2 border-hanoi-gold mt-auto">
+        <div class="max-w-6xl mx-auto px-4 text-center">
+            <p class="font-serif text-lg text-white mb-2">Hà Nội - Niềm Tự Hào Của Trái Tim Việt Nam</p>
+            <p class="text-xs text-amber-200/80 mb-4">&copy; 2026 Trang web giới thiệu Hà Nội. Tất cả quyền được bảo lưu.</p>
+            <div class="flex justify-center space-x-4 text-amber-200/70 text-sm">
+                <a href="#thang-canh" class="hover:text-white transition">Đầu trang</a>
+                <span>•</span>
+                <a href="https://vietnamtourism.gov.vn" target="_blank" class="hover:text-white transition">Du lịch Việt Nam</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Interactive Lightbox Modal -->
+    <div id="lightbox" class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm" onclick="closeLightbox()">
+        <div class="relative max-w-4xl w-full max-h-[90vh] flex flex-col items-center" onclick="event.stopPropagation()">
+            <button onclick="closeLightbox()" class="absolute -top-10 right-0 text-white text-2xl hover:text-hanoi-gold transition">
+                <i class="fa-solid fa-xmark"></i> Đóng
+            </button>
+            <img id="lightboxImg" src="" alt="" class="max-h-[75vh] w-auto rounded-lg shadow-2xl object-contain">
+            <p id="lightboxCaption" class="text-white text-center text-sm mt-4 px-4 bg-black/50 py-2 rounded-lg max-w-2xl"></p>
+        </div>
+    </div>
+
+    <script>
+        // Open Lightbox
+        function openLightbox(src, alt) {
+            document.getElementById('lightboxImg').src = src;
+            document.getElementById('lightboxImg').alt = alt;
+            document.getElementById('lightboxCaption').textContent = alt;
+            document.getElementById('lightbox').classList.remove('hidden');
+        }
+
+        // Close Lightbox
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.add('hidden');
+        }
+
+        // Quick Search/Filter function
+        function filterContent() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const items = document.querySelectorAll('.filterable-item');
+
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(query)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
