@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lời Tỏ Tình Dễ Thương</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 50%, #fce7f3 100%);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .font-cursive {
+            font-family: 'Dancing Script', cursive;
+        }
+
+        /* Floating background hearts animation */
+        .bg-heart {
+            position: absolute;
+            color: rgba(244, 114, 182, 0.25);
+            animation: float 8s infinite linear;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(105vh) scale(0.5) rotate(0deg);
+                opacity: 0;
+            }
+            20% {
+                opacity: 0.8;
+            }
+            80% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-10vh) scale(1.2) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Smooth transition for Dodge button */
+        #noBtn {
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        #yesBtn {
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 25px -5px rgba(244, 63, 94, 0.4);
+        }
+
+        #yesBtn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 15px 30px -5px rgba(244, 63, 94, 0.6);
+        }
+
+        /* Soft card glassmorphism effect */
+        .confession-card {
+            background: rgba(238, 242, 255, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 20px 50px rgba(168, 85, 247, 0.15);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4 relative select-none">
+
+    <div id="heartsContainer" class="fixed inset-0 pointer-events-none overflow-hidden"></div>
+
+    <main class="confession-card relative z-10 w-full max-w-2xl rounded-3xl p-8 md:p-12 text-center my-auto transition-all duration-300">
+        
+        <!-- Glowing Top Heart Badge -->
+        <div class="mx-auto w-16 h-16 md:w-20 md:h-20 bg-gradient-to-tr from-pink-100 to-rose-100 rounded-full flex items-center justify-center shadow-inner mb-6 transform hover:scale-110 transition-transform duration-300">
+            <span class="text-3xl md:text-4xl animate-pulse">💖</span>
+        </div>
+
+        <!-- Cursive Heading -->
+        <h1 class="font-cursive text-4xl sm:text-5xl md:text-6xl font-bold text-rose-600 mb-4 leading-tight tracking-wide drop-shadow-sm">
+            Cậu có đồng ý làm người yêu tớ không?
+        </h1>
+
+        <!-- Subtitle -->
+        <p class="text-gray-500 text-sm sm:text-base font-medium mb-10 max-w-lg mx-auto">
+            Suy nghĩ thật kỹ trước khi chọn nhé! (Mà nút Không khó bấm lắm đấy 😉)
+        </p>
+
+        <!-- Action Buttons Area -->
+        <div class="relative min-h-[100px] flex items-center justify-center gap-4 sm:gap-8 flex-wrap">
+            
+            <!-- YES Button -->
+            <button id="yesBtn" onclick="acceptLove()" class="bg-gradient-to-r from-rose-500 to-pink-500 text-white font-bold text-lg sm:text-xl px-8 sm:px-10 py-3.5 sm:py-4 rounded-full flex items-center gap-2 cursor-pointer z-20">
+                <span class="text-xl">❤️</span> ĐỒNG Ý
+            </button>
+
+            <!-- NO Button (Dodging Button) -->
+            <button id="noBtn" class="bg-gray-200/80 hover:bg-gray-300 text-gray-700 font-semibold text-sm sm:text-base px-6 py-3.5 rounded-full cursor-pointer z-10 shadow-sm border border-gray-300/50">
+                Không nha 😜
+            </button>
+        </div>
+    </main>
+
+    <div id="successModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-500 p-4">
+        <div class="bg-white rounded-3xl p-8 md:p-10 text-center max-w-sm w-full shadow-2xl transform scale-90 transition-all duration-500" id="modalContent">
+            <div class="text-6xl mb-4 animate-bounce">🥰</div>
+            <h2 class="text-2xl md:text-3xl font-bold text-rose-600 mb-2">Yêu cậu nhất trên đời! 🎉</h2>
+            <p class="text-gray-600 text-sm sm:text-base mb-6">Tớ biết ngay là cậu sẽ đồng ý mà! ❤️✨</p>
+            <button onclick="closeModal()" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-3 rounded-2xl transition-colors shadow-lg shadow-rose-200">
+                Hẹn hò thôi nào! 🌹
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Generate Floating Background Hearts
+        function createBackgroundHearts() {
+            const container = document.getElementById('heartsContainer');
+            const heartIcons = ['❤️', '💖', '💕', '💗', '💓', '🌸'];
+            const heartCount = 20;
+
+            for (let i = 0; i < heartCount; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'bg-heart';
+                heart.innerText = heartIcons[Math.floor(Math.random() * heartIcons.length)];
+                heart.style.left = `${Math.random() * 100}vw`;
+                heart.style.animationDuration = `${6 + Math.random() * 6}s`;
+                heart.style.animationDelay = `${Math.random() * 5}s`;
+                heart.style.fontSize = `${16 + Math.random() * 24}px`;
+                container.appendChild(heart);
+            }
+        }
+
+        // Dodging NO Button logic
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        let yesScale = 1;
+
+        function dodgeButton() {
+            // Get viewport boundaries with padding
+            const padding = 20;
+            const btnWidth = noBtn.offsetWidth;
+            const btnHeight = noBtn.offsetHeight;
+
+            const maxX = window.innerWidth - btnWidth - padding;
+            const maxY = window.innerHeight - btnHeight - padding;
+
+            const randomX = Math.max(padding, Math.floor(Math.random() * maxX));
+            const randomY = Math.max(padding, Math.floor(Math.random() * maxY));
+
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = `${randomX}px`;
+            noBtn.style.top = `${randomY}px`;
+
+            // Slightly increase YES button size each time NO is attempted
+            yesScale += 0.08;
+            if (yesScale < 2.2) {
+                yesBtn.style.transform = `scale(${yesScale})`;
+            }
+        }
+
+        // Trigger dodge on hover or touch
+        noBtn.addEventListener('mouseenter', dodgeButton);
+        noBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            dodgeButton();
+        });
+
+        // Accept Love Action
+        function acceptLove() {
+            // Heart Confetti Explosion
+            const count = 200;
+            const defaults = {
+                origin: { y: 0.7 }
+            };
+
+            function fire(particleRatio, opts) {
+                confetti(Object.assign({}, defaults, opts, {
+                    particleCount: Math.floor(count * particleRatio)
+                }));
+            }
+
+            fire(0.25, {
+                spread: 26,
+                startVelocity: 55,
+                shapes: ['circle'],
+                colors: ['#ff0000', '#ff69b4', '#ff1493']
+            });
+            fire(0.2, {
+                spread: 60,
+                shapes: ['circle']
+            });
+            fire(0.35, {
+                spread: 100,
+                decay: 0.91,
+                scalar: 0.8
+            });
+            fire(0.1, {
+                spread: 120,
+                startVelocity: 25,
+                decay: 0.92,
+                scalar: 1.2
+            });
+            fire(0.1, {
+                spread: 120,
+                startVelocity: 45,
+            });
+
+            // Display Success Modal
+            const modal = document.getElementById('successModal');
+            const modalContent = document.getElementById('modalContent');
+            
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modalContent.classList.remove('scale-90');
+            modalContent.classList.add('scale-100');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('successModal');
+            const modalContent = document.getElementById('modalContent');
+            
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-90');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        // Initialize background hearts on load
+        window.onload = () => {
+            createBackgroundHearts();
+        };
+    </script>
+</body>
+</html>
