@@ -1,4 +1,4 @@
-# Danh sách các tệp trong dự án
+# Danh sách các trang web
 
 - 📄 [t_i_x_u_game.html](./t_i_x_u_game.html)
 - 📄 [tai_xiu_game_v2 (1).html](./tai_xiu_game_v2%20(1).html)
