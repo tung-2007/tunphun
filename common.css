@@ -1,0 +1,58 @@
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  margin: 0;
+  padding: 0;
+  background-color: #f8f9fa;
+  color: #212529; /* Màu chữ tối trên nền sáng đảm bảo đạt độ tương phản WAVE */
+}
+
+header {
+  background-color: #003366; /* Màu xanh đậm */
+  padding: 20px;
+}
+
+nav {
+  background-color: #004080;
+  padding: 10px;
+}
+
+main {
+  background-color: #ffffff;
+  font-size: 18px;
+  padding: 20px;
+  min-height: 400px;
+}
+
+footer {
+  background-color: #003366;
+  color: #ffffff;
+  padding: 15px;
+  text-align: center;
+}
+
+li {
+  display: inline-block;
+  width: 120px;
+}
+
+h1 {
+  text-align: center;
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  color: #ffffff; /* Chữ trắng tương phản hoàn hảo trên nền xanh đậm #003366 */
+}
+
+p {
+  line-height: 1.6;
+}
+
+nav a {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
