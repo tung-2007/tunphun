@@ -5,11 +5,11 @@ body {
   margin: 0;
   padding: 0;
   background-color: #f8f9fa;
-  color: #212529; /* Màu chữ tối trên nền sáng đảm bảo đạt độ tương phản WAVE */
+  color: #212529; 
 }
 
 header {
-  background-color: #003366; /* Màu xanh đậm */
+  background-color: #003366;
   padding: 20px;
 }
 
@@ -40,11 +40,20 @@ li {
 h1 {
   text-align: center;
   font-family: 'Trebuchet MS', Arial, sans-serif;
-  color: #ffffff; /* Chữ trắng tương phản hoàn hảo trên nền xanh đậm #003366 */
+  color: #ffffff;
 }
 
+/* Bước 10: Thẻ p (chiều cao dòng) */
 p {
   line-height: 1.6;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  display: block;
+  margin: 15px auto;
 }
 
 nav a {
