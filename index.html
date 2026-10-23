@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thu vien anh tuong tác</title>
+    <link rel="stylesheet" href="00102.css">
+</head>
+<body>
+
+    <header>
+        <h1>Thư viện ảnh tương tác</h1>
+        <p>Di chuột qua một hình ảnh bên dưới để xem kích thước lớn và thuộc tính alt</p>
+    </header>
+
+    <main class="container">
+        <!-- Khung hiển thị ảnh lớn -->
+        <div id="image">
+            Di chuột qua một hình ảnh bên dưới để hiển thị ở đây.
+        </div>
+
+        <!-- Danh sách ảnh thu nhỏ -->
+        <div class="gallery">
+            <img class="preview" 
+                 alt="Khung cảnh thiên nhiên núi rừng hùng vĩ" 
+                 src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80" 
+                 onmouseover="upDate(this)" 
+                 onmouseout="unDo()">
+
+            <img class="preview" 
+                 alt="Bãi biển hoang sơ mùa hè ngập nắng" 
+                 src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80" 
+                 onmouseover="upDate(this)" 
+                 onmouseout="unDo()">
+
+            <img class="preview" 
+                 alt="Thành phố lên đèn rực rỡ về đêm" 
+                 src="https://images.unsplash.com/photo-1477959858617-67f30ac4ce78?auto=format&fit=crop&w=800&q=80" 
+                 onmouseover="upDate(this)" 
+                 onmouseout="unDo()">
+
+            <img class="preview" 
+                 alt="Rừng cây mùa thu lá vàng thơ mộng" 
+                 src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=800&q=80" 
+                 onmouseover="upDate(this)" 
+                 onmouseout="unDo()">
+        </div>
+
+        <!-- Khung mô phỏng Console Log -->
+        <div class="console-box">
+            <h3>Console Log:</h3>
+            <div id="console-output">> Đang chờ sự kiện di chuột...</div>
+        </div>
+    </main>
+
+    <script>
+        function logToVisualConsole(msg) {
+            const consoleDiv = document.getElementById('console-output');
+            consoleDiv.innerHTML += '<br>> ' + msg;
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        }
+
+        function upDate(previewPic) {
+            /* Step 3.1 & 3.2: Kiểm tra sự kiện & In thông tin */
+            console.log("Sự kiện onmouseover đã kích hoạt!");
+            console.log("Alt text:", previewPic.alt);
+            console.log("Source URL:", previewPic.src);
+
+            logToVisualConsole("<b>[onmouseover]</b> Alt: '" + previewPic.alt + "'");
+            logToVisualConsole("<b>[onmouseover]</b> Src: '" + previewPic.src + "'");
+
+            /* Step 3.3 & 3.4: Cập nhật văn bản của id="image" */
+            document.getElementById('image').innerHTML = previewPic.alt;
+
+            /* Step 3.5 & 3.6: Cập nhật hình nền của id="image" */
+            document.getElementById('image').style.backgroundImage = "url('" + previewPic.src + "')";
+        }
+
+        function unDo() {
+            console.log("Sự kiện onmouseout đã kích hoạt!");
+            logToVisualConsole("<b>[onmouseout]</b> Reset về trạng thái ban đầu");
+
+            /* Step 4.1: Cập nhật hình nền về url('') */
+            document.getElementById('image').style.backgroundImage = "url('')";
+
+            /* Step 4.2: Cập nhật văn bản về mặc định */
+            document.getElementById('image').innerHTML = "Di chuột qua một hình ảnh bên dưới để hiển thị ở đây.";
+        }
+    </script>
+</body>
+</html>
