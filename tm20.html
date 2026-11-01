@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Thư viện ảnh tương tác</title>
+  <link rel="stylesheet" href="tm20.css">
+</head>
+<body>
+
+  <h1>Thư viện ảnh</h1>
+  
+  <!-- Khung xem ảnh chính -->
+  <div id="image">Rê chuột hoặc nhấn Tab để xem ảnh.</div>
+
+  <!-- Danh sách 6 hình ảnh -->
+  <div class="gallery">
+    <img class="preview" src="https://picsum.photos/id/1015/600/400" alt="Dòng sông và núi" onmouseover="upDate(this)" onmouseleave="unDo()" onfocus="upDate(this)" onblur="unDo()">
+    <img class="preview" src="https://picsum.photos/id/1018/600/400" alt="Rừng núi sương mù" onmouseover="upDate(this)" onmouseleave="unDo()" onfocus="upDate(this)" onblur="unDo()">
+    <img class="preview" src="https://picsum.photos/id/1025/600/400" alt="Chú chó nhỏ" onmouseover="upDate(this)" onmouseleave="unDo()" onfocus="upDate(this)" onblur="unDo()">
+    <img class="preview" src="https://picsum.photos/id/1039/600/400" alt="Thành phố hoàng hôn" onmouseover="upDate(this)" onmouseleave="unDo()" onfocus="upDate(this)" onblur="unDo()">
+    <img class="preview" src="https://picsum.photos/id/1050/600/400" alt="Bờ biển xanh" onmouseover="upDate(this)" onmouseleave="unDo()" onfocus="upDate(this)" onblur="unDo()">
+    <img class="preview" src="https://picsum.photos/id/1069/600/400" alt="Con đường mùa thu" onmouseover="upDate(this)" onmouseleave="unDo()" onfocus="upDate(this)" onblur="unDo()">
+  </div>
+
+  <script>
+    function upDate(previewPic) {
+      const display = document.getElementById('image');
+      display.style.backgroundImage = "url('" + previewPic.src + "')";
+      display.innerText = previewPic.alt;
+    }
+
+    function unDo() {
+      const display = document.getElementById('image');
+      display.style.backgroundImage = "url('')";
+      display.innerText = "Rê chuột hoặc nhấn Tab để xem ảnh.";
+    }
+
+    function addTabFocus() {
+      console.log("Trang web đã tải xong!");
+      const images = document.querySelectorAll('.preview');
+      for (let i = 0; i < images.length; i++) {
+        images[i].setAttribute('tabindex', '0');
+      }
+    }
+
+    window.onload = addTabFocus;
+  </script>
+
+</body>
+</html>
