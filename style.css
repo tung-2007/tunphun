@@ -1,0 +1,78 @@
+/* ==========================================
+   1. CẤU HÌNH MẶC ĐỊNH (DI ĐỘNG / MOBILE VIEW)
+   ========================================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  padding: 20px;
+  background-color: #f4f4f9;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Khung chứa các phần tử */
+.container {
+  display: flex;
+  flex-direction: column; /* Xếp dọc ở chế độ di động */
+  gap: 20px;
+  justify-content: center;
+}
+
+/* Các thẻ div mặc định chiếm full chiều rộng */
+.card {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  text-align: center;
+}
+
+.card img {
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
+}
+
+
+/* ==========================================
+   2. TRUY VẤN MEDIA #1: TABLET VIEW (>= 772px)
+   ========================================== */
+
+@media screen and (min-width: 772px) {
+  .container {
+    flex-direction: row; /* Chuyển sang bố cục ngang */
+    flex-wrap: wrap;     /* Cho phép rớt dòng để xếp 2 div trên 1 hàng */
+  }
+
+  .card {
+    width: 45%; /* Mỗi div chiếm 45% chiều rộng khung xem */
+  }
+
+  .card img {
+    max-height: 30vh; /* Giới hạn chiều cao hình ảnh không quá 30% vh */
+    width: auto;      /* Giữ nguyên tỷ lệ ảnh khi giới hạn chiều cao */
+    object-fit: cover;
+  }
+}
+
+
+/* ==========================================
+   3. TRUY VẤN MEDIA #2: LARGE SCREEN VIEW (>= 998px)
+   ========================================== */
+
+@media screen and (min-width: 998px) {
+  .card {
+    width: 30%; /* Mỗi div chiếm 30% chiều rộng khung xem (hiển thị 3 div ngang) */
+  }
+}
