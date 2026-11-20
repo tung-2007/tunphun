@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh mục đầu tư | Portfolio</title>
+    <!-- Tích hợp Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Tích hợp file CSS tùy chỉnh của bạn -->
+    <link rel="stylesheet" href="style01.css">
+</head>
+
+<!-- TÍNH NĂNG 1: Scrollspy (Cuộn trang làm nổi bật menu) -->
+<body data-bs-spy="scroll" data-bs-target="#main-navbar" data-bs-root-margin="0px 0px -40%" data-bs-smooth-scroll="true" tabindex="0">
+
+    <!-- TÍNH NĂNG 1: Thanh điều hướng dính (Sticky Navbar) -->
+    <nav id="main-navbar" class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">MyPortfolio</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#home">Trang chủ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#projects">Dự án</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">Liên hệ</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Phần Hero (Giới thiệu) -->
+    <section id="home" class="hero-section d-flex align-items-center text-center text-white min-vh-100">
+        <div class="container">
+            <h1 class="display-3 fw-bold mb-4">Xin chào, Tôi là [Tên của bạn]</h1>
+            <p class="lead mb-5">Một nhà phát triển web đam mê sáng tạo những trải nghiệm người dùng tuyệt vời.</p>
+            <a href="#projects" class="btn btn-primary btn-lg custom-btn">Xem Dự án của tôi</a>
+        </div>
+    </section>
+
+    <!-- Phần Dự án -->
+    <section id="projects" class="py-5 bg-light">
+        <div class="container py-5">
+            <h2 class="text-center mb-5 fw-bold">Dự án Nổi bật</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <!-- TÍNH NĂNG 2: Bootstrap Carousel (Thanh trượt) -->
+                    <div id="projectCarousel" class="carousel slide shadow-lg rounded overflow-hidden" data-bs-ride="carousel">
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#projectCarousel" data-bs-slide-to="0" class="active"></button>
+                            <button type="button" data-bs-target="#projectCarousel" data-bs-slide-to="1"></button>
+                        </div>
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <!-- Chú ý: Thay link ảnh bằng ảnh thực tế của bạn hoặc để nguyên ảnh giả lập này -->
+                                <img src="https://via.placeholder.com/800x400/343a40/ffffff?text=Dự+án+Web+1" class="d-block w-100" alt="Dự án 1">
+                                <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded">
+                                    <h5>Trang web Bán hàng</h5>
+                                    <p>HTML, CSS, Bootstrap 5</p>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <img src="https://via.placeholder.com/800x400/0d6efd/ffffff?text=Dự+án+Web+2" class="d-block w-100" alt="Dự án 2">
+                                <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded">
+                                    <h5>Ứng dụng Quản lý</h5>
+                                    <p>Giao diện bảng điều khiển tương tác</p>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#projectCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon"></span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#projectCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon"></span>
+                        </button>
+                    </div>
+
+                    <!-- Nút Mở Hộp thoại -->
+                    <div class="text-center mt-4">
+                        <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#projectModal">
+                            Xem chi tiết cấu trúc dự án
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TÍNH NĂNG 3: Bootstrap Modal (Hộp thoại bật lên) -->
+    <div class="modal fade" id="projectModal" tabindex="-1" aria-labelledby="projectModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="projectModalLabel">Chi tiết Dự án</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Dự án này được thiết kế để áp dụng hoàn toàn hệ thống Grid của Bootstrap. Nó đáp ứng 100% trên thiết bị di động, máy tính bảng và màn hình lớn.</p>
+                    <ul>
+                        <li>Sử dụng Flexbox để căn giữa nội dung.</li>
+                        <li>Tối ưu hóa hình ảnh để tải trang nhanh hơn.</li>
+                        <li>Mã code tuân thủ chuẩn W3C.</li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phần Liên hệ -->
+    <section id="contact" class="py-5">
+        <div class="container py-5">
+            <h2 class="text-center mb-5 fw-bold">Liên hệ với tôi</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <!-- TÍNH NĂNG 4: Form Validation (Xác thực biểu mẫu) -->
+                    <form class="needs-validation" novalidate>
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Tên của bạn</label>
+                            <input type="text" class="form-control" id="name" required>
+                            <div class="invalid-feedback">
+                                Vui lòng nhập tên của bạn.
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Địa chỉ Email</label>
+                            <input type="email" class="form-control" id="email" required>
+                            <div class="invalid-feedback">
+                                Vui lòng nhập một địa chỉ email hợp lệ.
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Tin nhắn</label>
+                            <textarea class="form-control" id="message" rows="4" required></textarea>
+                            <div class="invalid-feedback">
+                                Vui lòng không để trống tin nhắn.
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 custom-btn">Gửi tin nhắn</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-3">
+        <p class="mb-0">&copy; 2026 Portfolio của [Tên của bạn]. Xây dựng bằng Bootstrap 5.</p>
+    </footer>
+
+    <!-- Tích hợp Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Script cho tính năng Form Validation của Bootstrap -->
+    <script>
+        (() => {
+            'use strict'
+            const forms = document.querySelectorAll('.needs-validation')
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })()
+    </script>
+</body>
+</html>
