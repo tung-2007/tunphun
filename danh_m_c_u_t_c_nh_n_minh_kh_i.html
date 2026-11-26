@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh Mục Đầu Tư Cá Nhân | Minh Khôi</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        slate: {
+                            850: '#151e2e',
+                            925: '#0c121e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Tùy chỉnh thanh cuộn và hiệu ứng khung mượt mà */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(148, 163, 184, 0.3);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(148, 163, 184, 0.5);
+        }
+        .framed-card {
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .framed-card:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 font-sans antialiased selection:bg-emerald-500/30 transition-colors duration-300">
+
+    <!-- Thông báo Toast (Thay thế alert) -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Container chính -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+
+        <!-- Thanh công cụ trên cùng (Top Bar) -->
+        <div class="flex flex-wrap items-center justify-between gap-4 pb-2 border-b border-slate-200 dark:border-slate-800/80">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold shadow-lg shadow-emerald-500/20">
+                    MK
+                </div>
+                <div>
+                    <span class="text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Báo cáo Tài sản</span>
+                    <h2 class="text-sm font-medium text-slate-500 dark:text-slate-400">Cập nhật: Hôm nay, 16:20 (GMT+7)</h2>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <!-- Nút Mở Modal Thêm Giao Dịch -->
+                <button onclick="openModal()" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm shadow-emerald-600/20 transition-all cursor-pointer">
+                    <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                    <span>Thêm Giao Dịch Mô Phỏng</span>
+                </button>
+
+                <!-- Nút Chuyển Giao Diện Sáng / Tối -->
+                <button id="theme-toggle" onclick="toggleTheme()" aria-label="Chuyển đổi giao diện" class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors cursor-pointer">
+                    <i id="theme-icon-sun" data-lucide="sun" class="w-4 h-4 hidden dark:block text-amber-400"></i>
+                    <i id="theme-icon-moon" data-lucide="moon" class="w-4 h-4 block dark:hidden text-slate-700"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 1. KHUNG HỒ SƠ & TỔNG QUAN (HEADER FRAME) -->
+        <section class="framed-card rounded-2xl border border-slate-200/90 dark:border-slate-800/90 bg-white/90 dark:bg-slate-900/70 backdrop-blur-xl p-6 sm:p-8 shadow-sm">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                <!-- Thông tin nhà đầu tư -->
+                <div class="space-y-2 max-w-xl">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        Nhà đầu tư Cá nhân • Hồ sơ Tăng trưởng Cân bằng
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+                        Minh Khôi — Danh Mục Tích Sản Dài Hạn
+                    </h1>
+                    <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                        Mục tiêu: Tự do tài chính vào năm 2035 thông qua chiến lược phân bổ đa lớp tài sản, tập trung vào doanh nghiệp đầu ngành tăng trưởng bền vững và quỹ chỉ số chi phí thấp.
+                    </p>
+                </div>
+
+                <!-- Tổng tài sản ròng & Bộ lọc thời gian -->
+                <div class="flex flex-col sm:flex-row lg:flex-col items-start sm:items-center lg:items-end justify-between gap-4 pt-4 lg:pt-0 border-t lg:border-t-0 border-slate-200 dark:border-slate-800">
+                    <div class="lg:text-right">
+                        <span class="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Tổng Giá Trị Tài Sản Ròng (NAV)</span>
+                        <div class="flex items-baseline gap-3 mt-1">
+                            <span id="nav-total" class="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-white">
+                                2.485.000.000 ₫
+                            </span>
+                            <span id="nav-return-badge" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                                <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
+                                +24.8%
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Bộ lọc thời gian -->
+                    <div class="inline-flex p-1 rounded-xl bg-slate-100 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/80" role="group">
+                        <button onclick="changeTimeframe('1M', this)" class="timeframe-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer">1M</button>
+                        <button onclick="changeTimeframe('6M', this)" class="timeframe-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer">6M</button>
+                        <button onclick="changeTimeframe('1Y', this)" class="timeframe-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-950 text-emerald-600 dark:text-emerald-400 shadow-sm transition-all cursor-pointer">1Y</button>
+                        <button onclick="changeTimeframe('ALL', this)" class="timeframe-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer">ALL</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. KHUNG CHỈ SỐ HIỆU SUẤT CHÍNH (4 KPI FRAMES) -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- KPI 1: Tổng vốn đầu tư -->
+            <div class="framed-card rounded-2xl border border-slate-200/90 dark:border-slate-800/90 bg-white dark:bg-slate-900/70 p-5 shadow-sm">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Tổng Vốn Đầu Tư</span>
+                    <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                        <i data-lucide="wallet" class="w-4 h-4"></i>
+                    </div>
+                </div>
+                <div id="kpi-invested" class="mt-3 text-2xl font-bold text-slate-900 dark:text-white">
+                    1.991.185.000 ₫
+                </div>
+                <div class="mt-2 flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+                    <span class="text-blue-600 dark:text-blue-400 font-medium">Giải ngân 100%</span>
+                    <span>• Vốn gốc tích lũy</span>
+                </div>
+            </div>
+
+            <!-- KPI 2: Lợi nhuận ròng -->
+            <div class="framed-card rounded-2xl border border-slate-200/90 dark:border-slate-800/90 bg-white dark:bg-slate-900/70 p-5 shadow-sm">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Lợi Nhuận Ròng</span>
+                    <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                        <i data-lucide="badge-dollar-sign" class="w-4 h-4"></i>
+                    </div>
+                </div>
+                <div id="kpi-profit" class="mt-3 text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+                    +493.815.000 ₫
+                </div>
+                <div class="mt-2 flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+                    <span class="text-emerald-600 dark:text-emerald-400 font-medium">+9.4% Alpha</span>
+                    <span>so với VN-Index</span>
+                </div>
+            </div>
+
+            <!-- KPI 3: Tỷ suất cổ tức / năm -->
+            <div class="framed-card rounded-2xl border border-slate-200/90 dark:border-slate-800/90 bg-white dark:bg-slate-900/70 p-5 shadow-sm">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Tỷ Suất Cổ Tức / Năm</span>
+                    <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                        <i data-lucide="coins" class="w-4 h-4"></i>
+                    </div>
+                </div>
+                <div class="mt-3 text-2xl font-bold text-slate-900 dark:text-white">
+                    4,85% <span class="text-sm font-normal text-slate-500">/ năm</span>
+                </div>
+                <div class="mt-2 flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+                    <span class="text-amber-600 dark:text-amber-400 font-medium">~120,5 triệu ₫</span>
+                    <span>dòng tiền thụ động</span>
+                </div>
+            </div>
+
+            <!-- KPI 4: Chỉ số rủi ro (Sharpe Ratio) -->
+            <div class="framed-card rounded-2xl border border-slate-200/90 dark:border-slate-800/90 bg-white dark:bg-slate-900/70 p-5 shadow-sm">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Chỉ Số Rủi Ro (Sharpe Ratio)</span>
+                    <div class="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+                        <i data-lucide="shield-check" class="w-4 h-4"></i>
+                    </div>
+                </div>
+                <div class="mt-3 text-2xl font-bold text-slate-900 dark:text-white">
+                    1,84
+                </div>
+                <div class="mt-2 flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+                    <span class="text-purple-600 dark:text-purple-400 font-medium">Tối ưu cao</span>
+                    <span>• Max Drawdown: -8,2%</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3 & 4. BENTO GRID: BIỂU ĐỒ TĂNG TRƯỞNG & PHÂN BỔ TÀI SẢN -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Khung Biểu đồ Tăng trưởng Tài sản (8 cột) -->
+            <div class="lg:col-span-8 framed-card rounded-2xl border border-slate-200/90 dark:border-slate-800/90 bg-white dark:bg-slate-900/70 p-6 shadow-sm flex flex-col justify-between">
+                <div class="flex flex-wrap items-start justify-between gap-4 mb-4">
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white">Hiệu Suất Tăng Trưởng Tài Sản</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">So sánh tỷ suất sinh lời danh mục cá nhân với chỉ số tham chiếu VN-Index (%)</p>
+                    </div>
+                    <div class="flex items-center gap-4 text-xs font-medium">
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+                            <span class="text-slate-700 dark:text-slate-300">Danh mục Minh Khôi</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-3 h-3 rounded-full bg-slate-400"></span>
+                            <span class="text-slate-500 dark:text-slate-400">VN-Index</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative w-full h-72 sm:h-80">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Khung Phân bổ Tài sản (4 cột) -->
+            <div class="lg:col-span-4 framed-card rounded-2xl border border-slate-200/90 dark:border-slate-800/90 bg-white dark:bg-slate-900/70 p-6 shadow-sm flex flex-col justify-between">
+                <div>
+                    <h3 class="text-base font-bold text-slate-900 dark:text-white">Phân Bổ Tài Sản</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Cơ cấu tỷ trọng theo từng lớp tài sản</p>
+                </div>
+
+                <div class="relative w-full h-48 my-4 flex items-center justify-center">
+                    <canvas id="allocationChart"></canvas>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                        <span class="text-[11px] uppercase tracking-wider text-slate-400">Đa dạng hóa</span>
+                        <span class="text-base font-bold text-slate-900 dark:text-white">4 Lớp</span>
+                    </div>
+                </div>
+
+                <!-- Chú thích chi tiết tỷ trọng & giá trị -->
+                <div id="allocation-legend" class="space-y-2.5 pt-2 border-t border-slate-100 dark:border-slate-800">
+                    <!-- Render tự động bằng JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. KHUNG DANH SÁCH TÀI SẢN NẮM GIỮ (HOLDINGS TABLE FRAME) -->
+        <section class="framed-card rounded-2xl border border-slate-200/90 dark:border-slate-800/90 bg-white dark:bg-slate-900/70 p-6 shadow-sm">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5">
+                <div>
+                    <h3 class="text-base font-bold text-slate-900 dark:text-white">Danh Sách Tài Sản Nắm Giữ</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Chi tiết hiệu suất từng mã tài sản trong danh mục hiện tại</p>
+                </div>
+
+                <!-- Thanh tìm kiếm và lọc loại tài sản -->
+                <div class="flex flex-wrap items-center gap-3">
+                    <div class="relative">
+                        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="search-input" oninput="filterHoldings()" placeholder="Tìm mã (VD: FPT, VCB...)" class="pl-9 pr-3 py-2 rounded-xl text-xs bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 w-48 sm:w-56">
+                    </div>
+
+                    <select id="category-filter" onchange="filterHoldings()" class="px-3 py-2 rounded-xl text-xs font-medium bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 focus:outline-none focus:border-emerald-500 cursor-pointer">
+                        <option value="ALL">Tất cả loại tài sản</option>
+                        <option value="Cổ phiếu">Cổ phiếu</option>
+                        <option value="Chứng chỉ quỹ ETF">Chứng chỉ quỹ ETF</option>
+                        <option value="Trái phiếu & Tiền gửi">Trái phiếu & Tiền gửi</option>
+                        <option value="Vàng & Tài sản số">Vàng & Tài sản số</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Bảng dữ liệu responsive -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-slate-200 dark:border-slate-800 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                            <th class="py-3 px-4">Mã / Tên Tài Sản</th>
+                            <th class="py-3 px-4">Phân Loại</th>
+                            <th class="py-3 px-4 text-right">Số Lượng</th>
+                            <th class="py-3 px-4 text-right">Giá Vốn TB</th>
+                            <th class="py-3 px-4 text-right">Giá Hiện Tại</th>
+                            <th class="py-3 px-4 text-right">Giá Trị Thị Trường</th>
+                            <th class="py-3 px-4 text-right">Lãi / Lỗ</th>
+                            <th class="py-3 px-4 text-right">Tỷ Trọng</th>
+                        </tr>
+                    </thead>
+                    <tbody id="holdings-table-body" class="divide-y divide-slate-100 dark:divide-slate-800/80 text-sm">
+                        <!-- Render tự động bằng JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 6. KHUNG NHẬT KÝ GIAO DỊCH & GHI CHÚ CHIẾN LƯỢC -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Nhật ký giao dịch gần đây (7 cột) -->
+            <div class="lg:col-span-7 framed-card rounded-2xl border border-slate-200/90 dark:border-slate-800/90 bg-white dark:bg-slate-900/70 p-6 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white">Nhật Ký Giao Dịch Gần Đây</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Lịch sử giải ngân tích sản định kỳ và tái cân bằng danh mục</p>
+                    </div>
+                    <span class="text-xs font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg">Tự động đồng bộ</span>
+                </div>
+
+                <div id="transactions-list" class="space-y-3 max-h-80 overflow-y-auto pr-1">
+                    <!-- Render tự động bằng JS -->
+                </div>
+            </div>
+
+            <!-- Ghi chú chiến lược đầu tư cốt lõi (5 cột) -->
+            <div class="lg:col-span-5 framed-card rounded-2xl border border-slate-200/90 dark:border-slate-800/90 bg-white dark:bg-slate-900/70 p-6 shadow-sm flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                            <i data-lucide="compass" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-slate-900 dark:text-white">Nguyên Tắc & Chiến Lược Cốt Lõi</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Kỷ luật đầu tư cá nhân</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40">
+                            <div class="flex items-center gap-2 text-xs font-semibold text-slate-900 dark:text-white mb-1">
+                                <span class="text-emerald-500">01.</span> Trung Bình Giá Định Kỳ (DCA)
+                            </div>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                                Trích 30% thu nhập hàng tháng vào ngày 05 để mua tích lũy chứng chỉ quỹ ETF và cổ phiếu đầu ngành bất kể biến động ngắn hạn.
+                            </p>
+                        </div>
+
+                        <div class="p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40">
+                            <div class="flex items-center gap-2 text-xs font-semibold text-slate-900 dark:text-white mb-1">
+                                <span class="text-blue-500">02.</span> Tái Cân Bằng Danh Mục Mỗi 6 Tháng
+                            </div>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                                Giữ tỷ trọng mục tiêu 50% Cổ phiếu - 25% ETF - 15% Trái phiếu - 10% Vàng. Chốt lời phần vượt ngưỡng để bổ sung lớp tài sản phòng thủ.
+                            </p>
+                        </div>
+
+                        <div class="p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40">
+                            <div class="flex items-center gap-2 text-xs font-semibold text-slate-900 dark:text-white mb-1">
+                                <span class="text-amber-500">03.</span> Biên An Toàn & Quản Trị Rủi Ro
+                            </div>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                                Không sử dụng đòn bẩy (Margin) quá 10%. Luôn duy trì quỹ dự phòng thanh khoản cao tương đương 6 tháng chi tiêu thiết yếu.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                    <span>Kỳ rà soát tiếp theo:</span>
+                    <span class="font-semibold text-slate-800 dark:text-slate-200">01/01/2027</span>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- MODAL THÊM GIAO DỊCH MÔ PHỎNG -->
+    <div id="transaction-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 backdrop-blur-sm p-4">
+        <div class="w-full max-w-md rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-2xl space-y-5">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white">Thêm Giao Dịch Mô Phỏng</h3>
+                <button onclick="closeModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <form id="add-tx-form" onsubmit="handleAddTransaction(event)" class="space-y-4">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Loại giao dịch</label>
+                        <select id="tx-type" class="w-full px-3 py-2 rounded-xl text-sm bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
+                            <option value="MUA">MUA VÀO</option>
+                            <option value="BÁN">BÁN RA</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Lớp tài sản</label>
+                        <select id="tx-category" class="w-full px-3 py-2 rounded-xl text-sm bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
+                            <option value="Cổ phiếu">Cổ phiếu</option>
+                            <option value="Chứng chỉ quỹ ETF">Chứng chỉ quỹ ETF</option>
+                            <option value="Trái phiếu & Tiền gửi">Trái phiếu & Tiền gửi</option>
+                            <option value="Vàng & Tài sản số">Vàng & Tài sản số</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Mã tài sản</label>
+                        <input type="text" id="tx-symbol" required placeholder="VD: FPT, HPG, SJC..." class="w-full px-3 py-2 rounded-xl text-sm uppercase bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Tên tài sản</label>
+                        <input type="text" id="tx-name" required placeholder="VD: Công ty FPT" class="w-full px-3 py-2 rounded-xl text-sm bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Số lượng</label>
+                        <input type="number" id="tx-qty" required min="1" step="any" placeholder="100" class="w-full px-3 py-2 rounded-xl text-sm bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Giá khớp lệnh (VNĐ)</label>
+                        <input type="number" id="tx-price" required min="1000" step="100" placeholder="135000" class="w-full px-3 py-2 rounded-xl text-sm bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
+                    </div>
+                </div>
+
+                <div class="pt-2 flex items-center justify-end gap-3">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">Hủy</button>
+                    <button type="submit" class="px-4 py-2 rounded-xl text-sm font-medium bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm cursor-pointer">Xác Nhận Giao Dịch</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Khởi tạo dữ liệu mẫu chuẩn xác theo tỷ trọng: Cổ phiếu (50%), ETF (25%), Trái phiếu (15%), Vàng (10%)
+        // Tổng NAV khởi điểm = 2.485.000.000 VNĐ
+        let holdings = [
+            { symbol: 'FPT', name: 'CTCP FPT', category: 'Cổ phiếu', qty: 4500, avgPrice: 98000, currentPrice: 138000 },
+            { symbol: 'VCB', name: 'Ngân hàng Vietcombank', category: 'Cổ phiếu', qty: 4000, avgPrice: 82000, currentPrice: 94500 },
+            { symbol: 'VNM', name: 'CTCP Sữa Việt Nam', category: 'Cổ phiếu', qty: 3630, avgPrice: 64000, currentPrice: 67080 },
+            { symbol: 'E1VFVN30', name: 'Quỹ ETF VFMVN30', category: 'Chứng chỉ quỹ ETF', qty: 18000, avgPrice: 19200, currentPrice: 23500 },
+            { symbol: 'FUEVFVND', name: 'Quỹ ETF VNDiamond', category: 'Chứng chỉ quỹ ETF', qty: 6200, avgPrice: 25500, currentPrice: 31975 },
+            { symbol: 'TCBF', name: 'Quỹ Trái Phiếu Techcom', category: 'Trái phiếu & Tiền gửi', qty: 21000, avgPrice: 16200, currentPrice: 17750 },
+            { symbol: 'SJC', name: 'Vàng Miếng SJC (Lượng)', category: 'Vàng & Tài sản số', qty: 2.95, avgPrice: 72500000, currentPrice: 84237288 }
+        ];
+
+        let transactions = [
+            { date: '22/11/2026', type: 'MUA', symbol: 'FPT', qty: 300, price: 136500, note: 'Giải ngân định kỳ tháng 11' },
+            { date: '05/11/2026', type: 'MUA', symbol: 'E1VFVN30', qty: 1500, price: 23200, note: 'Tích sản quỹ chỉ số DCA' },
+            { date: '18/10/2026', type: 'BÁN', symbol: 'VNM', qty: 500, price: 68500, note: 'Tái cân bằng tỷ trọng cổ phiếu' },
+            { date: '05/10/2026', type: 'MUA', symbol: 'TCBF', qty: 2000, price: 17600, note: 'Bổ sung lớp tài sản phòng thủ' }
+        ];
+
+        // Dữ liệu biểu đồ tăng trưởng theo các khung thời gian
+        const performanceData = {
+            '1M': {
+                labels: ['Tuần 1', 'Tuần 2', 'Tuần 3', 'Tuần 4'],
+                portfolio: [0, 1.2, 2.8, 3.6],
+                benchmark: [0, 0.5, 1.1, 1.4]
+            },
+            '6M': {
+                labels: ['T6/26', 'T7/26', 'T8/26', 'T9/26', 'T10/26', 'T11/26'],
+                portfolio: [0, 3.4, 6.1, 5.8, 10.2, 13.5],
+                benchmark: [0, 1.8, 3.2, 2.1, 5.4, 7.1]
+            },
+            '1Y': {
+                labels: ['T12/25', 'T02/26', 'T04/26', 'T06/26', 'T08/26', 'T10/26', 'T11/26'],
+                portfolio: [0, 4.5, 9.2, 12.8, 17.5, 21.4, 24.8],
+                benchmark: [0, 2.1, 5.0, 6.4, 9.8, 12.5, 15.4]
+            },
+            'ALL': {
+                labels: ['2022', '2023', '2024', '2025', '2026'],
+                portfolio: [0, 14.2, 32.6, 54.8, 78.4],
+                benchmark: [0, 8.5, 18.2, 29.4, 41.2]
+            }
+        };
+
+        let perfChartInstance = null;
+        let allocChartInstance = null;
+        let currentTimeframe = '1Y';
+
+        // Định dạng tiền tệ VNĐ
+        function formatVND(amount) {
+            return Math.round(amount).toLocaleString('vi-VN') + ' ₫';
+        }
+
+        // Hiển thị thông báo Toast
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-emerald-600' : 'bg-rose-600';
+            toast.className = `${bgColor} text-white px-4 py-3 rounded-xl shadow-lg text-xs font-medium flex items-center gap-2 transform transition-all duration-300 translate-y-2 opacity-0`;
+            toast.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            lucide.createIcons();
+
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Tính toán lại toàn bộ chỉ số danh mục
+        function recalculatePortfolio() {
+            let totalInvested = 0;
+            let totalMarketValue = 0;
+
+            const categoryTotals = {
+                'Cổ phiếu': 0,
+                'Chứng chỉ quỹ ETF': 0,
+                'Trái phiếu & Tiền gửi': 0,
+                'Vàng & Tài sản số': 0
+            };
+
+            holdings.forEach(item => {
+                const invested = item.qty * item.avgPrice;
+                const marketVal = item.qty * item.currentPrice;
+                totalInvested += invested;
+                totalMarketValue += marketVal;
+                if (categoryTotals[item.category] !== undefined) {
+                    categoryTotals[item.category] += marketVal;
+                }
+            });
+
+            const totalProfit = totalMarketValue - totalInvested;
+            const profitPercent = totalInvested > 0 ? ((totalProfit / totalInvested) * 100).toFixed(1) : 0;
+
+            // Cập nhật DOM Header & KPIs
+            document.getElementById('nav-total').textContent = formatVND(totalMarketValue);
+            const badge = document.getElementById('nav-return-badge');
+            const isPositive = totalProfit >= 0;
+            badge.className = `inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold border ${
+                isPositive 
+                ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' 
+                : 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-500/20'
+            }`;
+            badge.innerHTML = `<i data-lucide="${isPositive ? 'trending-up' : 'trending-down'}" class="w-3.5 h-3.5"></i> ${isPositive ? '+' : ''}${profitPercent}%`;
+
+            document.getElementById('kpi-invested').textContent = formatVND(totalInvested);
+            const profitEl = document.getElementById('kpi-profit');
+            profitEl.textContent = `${isPositive ? '+' : ''}${formatVND(totalProfit)}`;
+            profitEl.className = `mt-3 text-2xl font-bold ${isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`;
+
+            // Cập nhật biểu đồ phân bổ & chú thích
+            updateAllocationChart(categoryTotals, totalMarketValue);
+            // Cập nhật bảng danh sách tài sản
+            filterHoldings(totalMarketValue);
+            // Cập nhật nhật ký giao dịch
+            renderTransactions();
+            lucide.createIcons();
+        }
+
+        // Render bảng danh sách tài sản
+        function filterHoldings(totalMarketValueOverride = null) {
+            const searchQuery = document.getElementById('search-input').value.toLowerCase();
+            const categoryFilter = document.getElementById('category-filter').value;
+
+            const totalMarketValue = totalMarketValueOverride || holdings.reduce((sum, item) => sum + item.qty * item.currentPrice, 0);
+
+            const filtered = holdings.filter(item => {
+                const matchesSearch = item.symbol.toLowerCase().includes(searchQuery) || item.name.toLowerCase().includes(searchQuery);
+                const matchesCategory = categoryFilter === 'ALL' || item.category === categoryFilter;
+                return matchesSearch && matchesCategory;
+            });
+
+            const tbody = document.getElementById('holdings-table-body');
+            tbody.innerHTML = '';
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-xs text-slate-500">Không tìm thấy tài sản phù hợp với bộ lọc.</td></tr>`;
+                return;
+            }
+
+            filtered.forEach(item => {
+                const marketVal = item.qty * item.currentPrice;
+                const investedVal = item.qty * item.avgPrice;
+                const pnl = marketVal - investedVal;
+                const pnlPercent = ((pnl / investedVal) * 100).toFixed(1);
+                const weight = totalMarketValue > 0 ? ((marketVal / totalMarketValue) * 100).toFixed(1) : 0;
+                const isProfit = pnl >= 0;
+
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors';
+                tr.innerHTML = `
+                    <td class="py-3.5 px-4">
+                        <div class="font-bold text-slate-900 dark:text-white">${item.symbol}</div>
+                        <div class="text-xs text-slate-500 dark:text-slate-400">${item.name}</div>
+                    </td>
+                    <td class="py-3.5 px-4">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                            ${item.category}
+                        </span>
+                    </td>
+                    <td class="py-3.5 px-4 text-right font-medium text-slate-700 dark:text-slate-300">${item.qty.toLocaleString('vi-VN')}</td>
+                    <td class="py-3.5 px-4 text-right text-slate-600 dark:text-slate-400">${formatVND(item.avgPrice)}</td>
+                    <td class="py-3.5 px-4 text-right font-medium text-slate-900 dark:text-white">${formatVND(item.currentPrice)}</td>
+                    <td class="py-3.5 px-4 text-right font-semibold text-slate-900 dark:text-white">${formatVND(marketVal)}</td>
+                    <td class="py-3.5 px-4 text-right">
+                        <div class="font-semibold ${isProfit ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">
+                            ${isProfit ? '+' : ''}${pnlPercent}%
+                        </div>
+                        <div class="text-[11px] text-slate-500">${isProfit ? '+' : ''}${formatVND(pnl)}</div>
+                    </td>
+                    <td class="py-3.5 px-4 text-right">
+                        <div class="inline-flex items-center gap-2 justify-end">
+                            <span class="font-semibold text-slate-800 dark:text-slate-200">${weight}%</span>
+                            <div class="w-12 h-1.5 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+                                <div class="h-full bg-emerald-500 rounded-full" style="width: ${Math.min(weight, 100)}%"></div>
+                            </div>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Render nhật ký giao dịch
+        function renderTransactions() {
+            const list = document.getElementById('transactions-list');
+            list.innerHTML = '';
+
+            transactions.forEach(tx => {
+                const isBuy = tx.type === 'MUA';
+                const totalTx = tx.qty * tx.price;
+                const div = document.createElement('div');
+                div.className = 'flex items-center justify-between p-3.5 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 hover:border-slate-300 dark:hover:border-slate-700 transition-colors';
+                div.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs ${
+                            isBuy ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' : 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
+                        }">
+                            ${tx.type}
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-sm text-slate-900 dark:text-white">${tx.symbol}</span>
+                                <span class="text-xs text-slate-500">• ${tx.qty.toLocaleString('vi-VN')} đơn vị @ ${formatVND(tx.price)}</span>
+                            </div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">${tx.note}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-sm font-semibold text-slate-900 dark:text-white">${formatVND(totalTx)}</div>
+                        <div class="text-[11px] text-slate-400">${tx.date}</div>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        // Khởi tạo / Cập nhật Biểu đồ Tăng trưởng (Line/Area Chart)
+        function renderPerformanceChart(timeframe) {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            const isDark = document.documentElement.classList.contains('dark');
+            const gridColor = isDark ? 'rgba(148, 163, 184, 0.1)' : 'rgba(148, 163, 184, 0.2)';
+            const textColor = isDark ? '#94a3b8' : '#64748b';
+
+            const dataSet = performanceData[timeframe];
+
+            if (perfChartInstance) {
+                perfChartInstance.destroy();
+            }
+
+            const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, 'rgba(16, 185, 129, 0.28)');
+            gradient.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+
+            perfChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dataSet.labels,
+                    datasets: [
+                        {
+                            label: 'Danh mục Minh Khôi (%)',
+                            data: dataSet.portfolio,
+                            borderColor: '#10b981',
+                            backgroundColor: gradient,
+                            borderWidth: 2.5,
+                            pointBackgroundColor: '#10b981',
+                            pointBorderColor: isDark ? '#0f172a' : '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            fill: true,
+                            tension: 0.35
+                        },
+                        {
+                            label: 'VN-Index (%)',
+                            data: dataSet.benchmark,
+                            borderColor: '#94a3b8',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            pointRadius: 3,
+                            pointHoverRadius: 5,
+                            fill: false,
+                            tension: 0.35
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: isDark ? '#1e293b' : '#ffffff',
+                            titleColor: isDark ? '#f8fafc' : '#0f172a',
+                            bodyColor: isDark ? '#cbd5e1' : '#334155',
+                            borderColor: isDark ? '#334155' : '#e2e8f0',
+                            borderWidth: 1,
+                            padding: 12,
+                            cornerRadius: 10,
+                            callbacks: {
+                                label: function(context) {
+                                    return ` ${context.dataset.label}: +${context.parsed.y}%`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: textColor, font: { size: 11 } }
+                        },
+                        y: {
+                            grid: { color: gridColor },
+                            ticks: {
+                                color: textColor,
+                                font: { size: 11 },
+                                callback: value => '+' + value + '%'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Khởi tạo / Cập nhật Biểu đồ Phân bổ Tài sản (Donut Chart)
+        function updateAllocationChart(categoryTotals, totalMarketValue) {
+            const ctx = document.getElementById('allocationChart').getContext('2d');
+            const isDark = document.documentElement.classList.contains('dark');
+
+            const labels = ['Cổ phiếu', 'Chứng chỉ quỹ ETF', 'Trái phiếu & Tiền gửi', 'Vàng & Tài sản số'];
+            const colors = ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b'];
+            const values = labels.map(l => categoryTotals[l] || 0);
+
+            if (allocChartInstance) {
+                allocChartInstance.destroy();
+            }
+
+            allocChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: colors,
+                        borderColor: isDark ? '#0f172a' : '#ffffff',
+                        borderWidth: 3,
+                        hoverOffset: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '72%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: isDark ? '#1e293b' : '#ffffff',
+                            titleColor: isDark ? '#f8fafc' : '#0f172a',
+                            bodyColor: isDark ? '#cbd5e1' : '#334155',
+                            borderColor: isDark ? '#334155' : '#e2e8f0',
+                            borderWidth: 1,
+                            padding: 10,
+                            cornerRadius: 10,
+                            callbacks: {
+                                label: function(context) {
+                                    const val = context.parsed;
+                                    const pct = totalMarketValue > 0 ? ((val / totalMarketValue) * 100).toFixed(1) : 0;
+                                    return ` ${pct}% (${formatVND(val)})`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Cập nhật chú thích bên dưới biểu đồ tròn
+            const legendContainer = document.getElementById('allocation-legend');
+            legendContainer.innerHTML = '';
+
+            labels.forEach((label, idx) => {
+                const val = values[idx];
+                const pct = totalMarketValue > 0 ? ((val / totalMarketValue) * 100).toFixed(1) : 0;
+                const row = document.createElement('div');
+                row.className = 'flex items-center justify-between text-xs';
+                row.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${colors[idx]}"></span>
+                        <span class="text-slate-600 dark:text-slate-300 font-medium">${label}</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="font-bold text-slate-900 dark:text-white">${pct}%</span>
+                        <span class="text-slate-400 ml-1.5">(${(val / 1000000).toFixed(0)} Tr)</span>
+                    </div>
+                `;
+                legendContainer.appendChild(row);
+            });
+        }
+
+        // Chuyển đổi khung thời gian
+        function changeTimeframe(tf, btnElement) {
+            currentTimeframe = tf;
+            document.querySelectorAll('.timeframe-btn').forEach(btn => {
+                btn.className = 'timeframe-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer';
+            });
+            btnElement.className = 'timeframe-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-950 text-emerald-600 dark:text-emerald-400 shadow-sm transition-all cursor-pointer';
+            renderPerformanceChart(tf);
+        }
+
+        // Chuyển đổi Sáng / Tối
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+            renderPerformanceChart(currentTimeframe);
+            recalculatePortfolio();
+        }
+
+        // Điều khiển Modal
+        function openModal() {
+            const modal = document.getElementById('transaction-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('transaction-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.getElementById('add-tx-form').reset();
+        }
+
+        // Xử lý thêm giao dịch mô phỏng
+        function handleAddTransaction(e) {
+            e.preventDefault();
+            const type = document.getElementById('tx-type').value;
+            const category = document.getElementById('tx-category').value;
+            const symbol = document.getElementById('tx-symbol').value.trim().toUpperCase();
+            const name = document.getElementById('tx-name').value.trim();
+            const qty = parseFloat(document.getElementById('tx-qty').value);
+            const price = parseFloat(document.getElementById('tx-price').value);
+
+            const existingIndex = holdings.findIndex(h => h.symbol === symbol);
+
+            if (type === 'MUA') {
+                if (existingIndex > -1) {
+                    const item = holdings[existingIndex];
+                    const totalOldCost = item.qty * item.avgPrice;
+                    const totalNewCost = qty * price;
+                    item.qty += qty;
+                    item.avgPrice = (totalOldCost + totalNewCost) / item.qty;
+                    item.currentPrice = price;
+                } else {
+                    holdings.unshift({
+                        symbol,
+                        name,
+                        category,
+                        qty,
+                        avgPrice: price,
+                        currentPrice: Math.round(price * 1.02) // Giả lập tăng nhẹ 2% sau khi mua
+                    });
+                }
+                showToast(`Đã ghi nhận lệnh MUA ${qty} ${symbol}`);
+            } else {
+                if (existingIndex > -1) {
+                    const item = holdings[existingIndex];
+                    if (qty >= item.qty) {
+                        holdings.splice(existingIndex, 1);
+                    } else {
+                        item.qty -= qty;
+                        item.currentPrice = price;
+                    }
+                    showToast(`Đã ghi nhận lệnh BÁN ${qty} ${symbol}`);
+                } else {
+                    showToast(`Không tìm thấy mã ${symbol} trong danh mục để bán!`, 'error');
+                    return;
+                }
+            }
+
+            // Thêm vào nhật ký giao dịch
+            const today = new Date();
+            const dateStr = `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}/${today.getFullYear()}`;
+            transactions.unshift({
+                date: dateStr,
+                type,
+                symbol,
+                qty,
+                price,
+                note: 'Giao dịch mô phỏng trực tiếp'
+            });
+
+            closeModal();
+            recalculatePortfolio();
+        }
+
+        // Khởi chạy ứng dụng khi tải trang
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            renderPerformanceChart(currentTimeframe);
+            recalculatePortfolio();
+        });
+    </script>
+</body>
+</html>
