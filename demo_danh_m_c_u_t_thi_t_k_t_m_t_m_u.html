@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="vi" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinTemplate VN — Demo Danh Mục Đầu Tư Thiết Kế Từ Mẫu</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts: Be Vietnam Pro & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Be Vietnam Pro"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        ivory: {
+                            50: '#fdfcf8',
+                            100: '#f7f4eb',
+                            200: '#ede6d3',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+        }
+        .tabular-nums {
+            font-variant-numeric: tabular-nums;
+        }
+        /* Tùy chỉnh thanh cuộn tinh tế */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(148, 163, 184, 0.35);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(148, 163, 184, 0.55);
+        }
+    </style>
+</head>
+<body id="app-body" class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 font-sans antialiased transition-colors duration-300">
+
+    <!-- Thông báo Toast (Thay thế alert) -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- TOP NAVIGATION BAR -->
+    <header class="sticky top-0 z-30 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/85 dark:bg-slate-900/85 backdrop-blur-md transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+            <!-- Brand Logo -->
+            <div class="flex items-center gap-3">
+                <div id="brand-logo-box" class="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-sm transition-colors">
+                    <i data-lucide="layers" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-bold text-base tracking-tight text-slate-900 dark:text-white">FinTemplate VN</span>
+                        <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                            Template Edition
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 hidden sm:block">Hệ thống quản lý danh mục theo mẫu chuẩn</p>
+                </div>
+            </div>
+
+            <!-- Right Actions -->
+            <div class="flex items-center gap-2.5 sm:gap-3">
+                <!-- Dropdown chọn nhanh mẫu trên mobile/desktop -->
+                <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 text-xs">
+                    <span class="text-slate-500 dark:text-slate-400">Mẫu chuẩn:</span>
+                    <select id="header-template-select" onchange="switchTemplate(this.value)" class="bg-transparent font-semibold text-slate-900 dark:text-white focus:outline-none cursor-pointer">
+                        <option value="balanced" class="dark:bg-slate-900">1. Cân bằng Tăng trưởng</option>
+                        <option value="dividend" class="dark:bg-slate-900">2. Cổ tức Thụ động</option>
+                        <option value="conservative" class="dark:bg-slate-900">3. Tích lũy Hưu trí An toàn</option>
+                    </select>
+                </div>
+
+                <!-- Nút Thêm tài sản / Giao dịch -->
+                <button id="primary-cta-btn" onclick="openModal()" class="inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm transition-all cursor-pointer">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    <span>Thêm tài sản / Giao dịch</span>
+                </button>
+
+                <!-- Nút Chuyển Dark/Light Mode -->
+                <button onclick="toggleDarkMode()" aria-label="Chuyển đổi giao diện Sáng/Tối" class="p-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors cursor-pointer">
+                    <i data-lucide="sun" class="w-4 h-4 hidden dark:block text-amber-400"></i>
+                    <i data-lucide="moon" class="w-4 h-4 block dark:hidden text-slate-700"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+
+        <!-- TEMPLATE PRESET SWITCHER BANNER (Bộ chọn Mẫu Thiết kế & Chiến lược) -->
+        <section id="template-banner" class="rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 sm:p-6 shadow-sm transition-all">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+                <div class="space-y-1.5">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span id="active-template-badge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-500/30">
+                            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                            Đang dùng mẫu: Cân bằng Tăng trưởng
+                        </span>
+                        <span class="text-xs text-slate-400 dark:text-slate-500">• Tự động áp dụng giao diện & tỷ trọng mục tiêu</span>
+                    </div>
+                    <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                        Danh Mục Đầu Tư Cá Nhân — <span id="investor-profile-title">Nguyễn Hoàng Nam</span>
+                    </h1>
+                    <p id="template-description" class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-2xl">
+                        Thiết kế theo mẫu chuẩn SaaS hiện đại, tối ưu hóa tăng trưởng vốn dài hạn với phân bổ chuẩn: 60% Cổ phiếu & ETF, 25% Trái phiếu & Vàng, 15% Tiền gửi thanh khoản.
+                    </p>
+                </div>
+
+                <!-- 3 Nút Chuyển Đổi Mẫu (Pills) -->
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 bg-slate-100/90 dark:bg-slate-800/80 p-1.5 rounded-xl border border-slate-200/80 dark:border-slate-700/80 shrink-0">
+                    <button onclick="switchTemplate('balanced')" id="tpl-btn-balanced" class="tpl-pill px-3.5 py-2 rounded-lg text-xs font-semibold text-left sm:text-center transition-all cursor-pointer bg-white dark:bg-slate-950 text-emerald-700 dark:text-emerald-400 shadow-sm">
+                        <div class="font-bold">Mẫu 1: Cân bằng</div>
+                        <div class="text-[10px] opacity-75 font-normal">60% CP • 25% TP/Vàng • 15% Tiền</div>
+                    </button>
+                    <button onclick="switchTemplate('dividend')" id="tpl-btn-dividend" class="tpl-pill px-3.5 py-2 rounded-lg text-xs font-semibold text-left sm:text-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer">
+                        <div class="font-bold">Mẫu 2: Cổ tức Thụ động</div>
+                        <div class="text-[10px] opacity-75 font-normal">45% CP Cổ tức • 40% TP • 15% Tiền</div>
+                    </button>
+                    <button onclick="switchTemplate('conservative')" id="tpl-btn-conservative" class="tpl-pill px-3.5 py-2 rounded-lg text-xs font-semibold text-left sm:text-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer">
+                        <div class="font-bold">Mẫu 3: Hưu trí An toàn</div>
+                        <div class="text-[10px] opacity-75 font-normal">20% ETF • 50% TP/Vàng • 30% Tiền</div>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- KPI SUMMARY ROW (4 CARDS) -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Card 1: Tổng giá trị danh mục -->
+            <div class="rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Tổng giá trị danh mục</span>
+                    <div id="kpi-icon-1" class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                        <i data-lucide="briefcase" class="w-4 h-4"></i>
+                    </div>
+                </div>
+                <div id="kpi-total-value" class="mt-3 text-2xl font-bold font-mono tabular-nums tracking-tight text-slate-900 dark:text-white">
+                    1.250.000.000 ₫
+                </div>
+                <div class="mt-2 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                    <span>Vốn gốc: <strong id="kpi-cost-basis" class="font-mono tabular-nums text-slate-700 dark:text-slate-300">1.064.600.000 ₫</strong></span>
+                </div>
+            </div>
+
+            <!-- Card 2: Lợi nhuận ròng (YTD) -->
+            <div class="rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Lợi nhuận ròng (YTD)</span>
+                    <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                        <i data-lucide="trending-up" class="w-4 h-4"></i>
+                    </div>
+                </div>
+                <div class="mt-3 flex items-baseline gap-2">
+                    <span id="kpi-net-profit" class="text-2xl font-bold font-mono tabular-nums tracking-tight text-emerald-600 dark:text-emerald-400">
+                        +185.400.000 ₫
+                    </span>
+                </div>
+                <div class="mt-2 flex items-center gap-2 text-xs">
+                    <span id="kpi-profit-pct" class="inline-flex items-center px-2 py-0.5 rounded font-mono font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400">
+                        +17,4%
+                    </span>
+                    <span class="text-slate-500 dark:text-slate-400">Vượt mẫu chuẩn +2,1%</span>
+                </div>
+            </div>
+
+            <!-- Card 3: Tỷ suất cổ tức / Thu nhập thụ động -->
+            <div class="rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Thu nhập thụ động dự kiến</span>
+                    <div class="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                        <i data-lucide="coins" class="w-4 h-4"></i>
+                    </div>
+                </div>
+                <div class="mt-3 flex items-baseline gap-2">
+                    <span id="kpi-yield-rate" class="text-2xl font-bold font-mono tabular-nums tracking-tight text-slate-900 dark:text-white">
+                        5,8%
+                    </span>
+                    <span class="text-xs text-slate-500">/ năm</span>
+                </div>
+                <div class="mt-2 text-xs text-slate-500 dark:text-slate-400">
+                    Ước tính: <strong id="kpi-passive-income" class="font-mono tabular-nums text-amber-600 dark:text-amber-400">72.500.000 ₫</strong>/năm
+                </div>
+            </div>
+
+            <!-- Card 4: Mức độ lệch chuẩn so với Mẫu chuẩn -->
+            <div class="rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Độ lệch so với Mẫu chuẩn</span>
+                    <div class="w-8 h-8 rounded-lg bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+                        <i data-lucide="scale" class="w-4 h-4"></i>
+                    </div>
+                </div>
+                <div id="kpi-drift-status" class="mt-3 text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                    Cân bằng tốt
+                </div>
+                <div class="mt-2 flex items-center justify-between text-xs">
+                    <span id="kpi-drift-detail" class="text-slate-500 dark:text-slate-400">Độ lệch tối đa: 2,4%</span>
+                    <button onclick="rebalanceToTemplate()" class="font-semibold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer">
+                        Tái cân bằng →
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- MAIN ANALYTICS GRID (2 COLUMNS) -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Left Column (7 cols): Interactive Performance Line/Area Chart -->
+            <div class="lg:col-span-7 rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm flex flex-col justify-between">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+                    <div>
+                        <h2 class="text-base font-bold text-slate-900 dark:text-white">Tăng Trưởng Thực Tế vs. Mẫu Chuẩn</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">So sánh hiệu suất lũy kế (%) với danh mục tham chiếu của mẫu</p>
+                    </div>
+
+                    <!-- Timeframe Selector -->
+                    <div class="inline-flex p-1 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 self-start">
+                        <button onclick="setTimeframe('1M', this)" class="tf-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer">1M</button>
+                        <button onclick="setTimeframe('3M', this)" class="tf-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer">3M</button>
+                        <button onclick="setTimeframe('6M', this)" class="tf-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer">6M</button>
+                        <button onclick="setTimeframe('1Y', this)" class="tf-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-white dark:bg-slate-950 text-emerald-600 dark:text-emerald-400 shadow-sm cursor-pointer">1Y</button>
+                        <button onclick="setTimeframe('ALL', this)" class="tf-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer">ALL</button>
+                    </div>
+                </div>
+
+                <!-- Legend -->
+                <div class="flex items-center gap-5 text-xs mb-3">
+                    <div class="flex items-center gap-2">
+                        <span id="chart-legend-dot" class="w-3 h-3 rounded-full bg-emerald-600"></span>
+                        <span class="font-medium text-slate-700 dark:text-slate-300">Danh mục thực tế</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-0.5 bg-slate-400 border-t-2 border-dashed border-slate-400"></span>
+                        <span class="text-slate-500 dark:text-slate-400">Danh mục mẫu chuẩn (Benchmark)</span>
+                    </div>
+                </div>
+
+                <!-- Chart Canvas -->
+                <div class="relative w-full h-72">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Right Column (5 cols): Asset Allocation Doughnut + Target vs Actual Rebalancing -->
+            <div class="lg:col-span-5 rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm flex flex-col justify-between">
+                <div class="flex items-start justify-between gap-2">
+                    <div>
+                        <h2 class="text-base font-bold text-slate-900 dark:text-white">Phân Bổ & Tái Cân Bằng Theo Mẫu</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Đối chiếu tỷ trọng thực tế với mục tiêu của mẫu</p>
+                    </div>
+                    <button onclick="rebalanceToTemplate()" id="rebalance-btn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 dark:bg-slate-800 dark:hover:bg-emerald-500/20 dark:text-slate-200 dark:hover:text-emerald-300 border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer shrink-0">
+                        <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                        <span>Tự động cân bằng theo mẫu</span>
+                    </button>
+                </div>
+
+                <!-- Doughnut Chart -->
+                <div class="relative w-full h-44 my-4 flex items-center justify-center">
+                    <canvas id="allocationChart"></canvas>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                        <span class="text-[10px] uppercase tracking-wider text-slate-400">Cấu trúc</span>
+                        <span class="text-sm font-bold text-slate-900 dark:text-white">4 Nhóm</span>
+                    </div>
+                </div>
+
+                <!-- Target vs Actual Rebalancing Bars -->
+                <div id="rebalancing-bars" class="space-y-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+                    <!-- Render tự động bằng JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- HOLDINGS TABLE SECTION (Danh sách tài sản chi tiết) -->
+        <section class="rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5">
+                <div>
+                    <h2 class="text-base font-bold text-slate-900 dark:text-white">Danh Sách Tài Sản Chi Tiết</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Theo dõi hiệu suất từng mã và mức độ khớp tỷ trọng so với mẫu chuẩn</p>
+                </div>
+
+                <!-- Search & Category Filter -->
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <div class="relative">
+                        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="search-input" oninput="renderHoldingsTable()" placeholder="Tìm mã (FPT, VCB, E1VFVN30...)" class="pl-9 pr-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 w-52 sm:w-60">
+                    </div>
+
+                    <select id="category-filter" onchange="renderHoldingsTable()" class="px-3 py-2 rounded-xl text-xs font-medium bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 focus:outline-none focus:border-emerald-500 cursor-pointer">
+                        <option value="ALL">Tất cả phân loại</option>
+                        <option value="Cổ phiếu VN">Cổ phiếu VN</option>
+                        <option value="Quỹ ETF">Quỹ ETF</option>
+                        <option value="Trái phiếu & Vàng">Trái phiếu & Vàng</option>
+                        <option value="Tiền gửi">Tiền gửi</option>
+                    </select>
+
+                    <button onclick="resetCurrentTemplate()" title="Khôi phục dữ liệu gốc của mẫu" class="p-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer">
+                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Responsive Table -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-slate-200 dark:border-slate-800 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                            <th class="py-3 px-3">Mã & Tên tài sản</th>
+                            <th class="py-3 px-3">Phân loại</th>
+                            <th class="py-3 px-3 text-right">Số lượng</th>
+                            <th class="py-3 px-3 text-right">Giá vốn TB</th>
+                            <th class="py-3 px-3 text-right">Giá hiện tại</th>
+                            <th class="py-3 px-3 text-right">Tổng giá trị</th>
+                            <th class="py-3 px-3 text-right">Lãi / Lỗ (%)</th>
+                            <th class="py-3 px-3 text-right">Tỷ trọng Thực tế vs. Mẫu</th>
+                            <th class="py-3 px-3 text-center">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="holdings-tbody" class="divide-y divide-slate-100 dark:divide-slate-800/80 text-xs sm:text-sm">
+                        <!-- Render tự động bằng JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL: THÊM / MÔ PHỎNG GIAO DỊCH -->
+    <div id="tx-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 backdrop-blur-sm p-4">
+        <div class="w-full max-w-md rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-2xl space-y-5">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+                <div>
+                    <h3 class="text-base font-bold text-slate-900 dark:text-white">Thêm / Mô Phỏng Giao Dịch</h3>
+                    <p class="text-xs text-slate-500">Tự động cập nhật toàn bộ KPI và tỷ trọng so với mẫu</p>
+                </div>
+                <button onclick="closeModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <form id="tx-form" onsubmit="handleTransactionSubmit(event)" class="space-y-4">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Loại lệnh</label>
+                        <select id="form-type" class="w-full px-3 py-2 rounded-xl text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
+                            <option value="BUY">MUA VÀO (+)</option>
+                            <option value="SELL">BÁN RA (-)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Phân loại tài sản</label>
+                        <select id="form-category" class="w-full px-3 py-2 rounded-xl text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
+                            <option value="Cổ phiếu VN">Cổ phiếu VN</option>
+                            <option value="Quỹ ETF">Quỹ ETF</option>
+                            <option value="Trái phiếu & Vàng">Trái phiếu & Vàng</option>
+                            <option value="Tiền gửi">Tiền gửi</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Mã tài sản</label>
+                        <input type="text" id="form-symbol" required placeholder="VD: FPT, HPG, SJC" class="w-full px-3 py-2 rounded-xl text-sm uppercase font-mono bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Tên tài sản</label>
+                        <input type="text" id="form-name" required placeholder="VD: CTCP FPT" class="w-full px-3 py-2 rounded-xl text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Số lượng</label>
+                        <input type="number" id="form-qty" required min="0.01" step="any" placeholder="500" class="w-full px-3 py-2 rounded-xl text-sm font-mono bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Đơn giá (VNĐ)</label>
+                        <input type="number" id="form-price" required min="1" step="any" placeholder="135000" class="w-full px-3 py-2 rounded-xl text-sm font-mono bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
+                    </div>
+                </div>
+
+                <div class="pt-2 flex items-center justify-end gap-2.5">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">Hủy bỏ</button>
+                    <button type="submit" class="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm cursor-pointer">Thực hiện giao dịch</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // CẤU HÌNH 3 MẪU THIẾT KẾ & CHIẾN LƯỢC (TEMPLATE PRESETS)
+        const TEMPLATES = {
+            balanced: {
+                id: 'balanced',
+                name: 'Cân bằng Tăng trưởng',
+                badgeText: 'Đang dùng mẫu: Cân bằng Tăng trưởng',
+                investorName: 'Nguyễn Hoàng Nam',
+                description: 'Thiết kế theo mẫu chuẩn SaaS hiện đại, tối ưu hóa tăng trưởng vốn dài hạn với phân bổ chuẩn: 60% Cổ phiếu & ETF, 25% Trái phiếu & Vàng, 15% Tiền gửi thanh khoản.',
+                accentColor: '#059669', // Emerald 600
+                bodyLightBg: 'bg-slate-50',
+                yieldRate: '5,8%',
+                // Tỷ trọng mục tiêu theo 4 nhóm phân loại trong bảng
+                targets: {
+                    'Cổ phiếu VN': 40,
+                    'Quỹ ETF': 20,
+                    'Trái phiếu & Vàng': 25,
+                    'Tiền gửi': 15
+                },
+                // Dữ liệu danh mục khởi tạo khớp với Tổng ~ 1.250.000.000 VNĐ, Lợi nhuận ~ +185.400.000 VNĐ (+17,4%)
+                initialHoldings: [
+                    { symbol: 'FPT', name: 'CTCP FPT', category: 'Cổ phiếu VN', qty: 1800, avgPrice: 102000, currentPrice: 138000, targetWeight: 20 },
+                    { symbol: 'VCB', name: 'Ngân hàng Vietcombank', category: 'Cổ phiếu VN', qty: 1600, avgPrice: 81000, currentPrice: 94500, targetWeight: 12 },
+                    { symbol: 'HPG', name: 'Tập đoàn Hòa Phát', category: 'Cổ phiếu VN', qty: 3750, avgPrice: 23500, currentPrice: 27840, targetWeight: 8 },
+                    { symbol: 'E1VFVN30', name: 'Quỹ ETF VFMVN30', category: 'Quỹ ETF', qty: 6500, avgPrice: 19500, currentPrice: 23400, targetWeight: 12 },
+                    { symbol: 'FUEVFVND', name: 'Quỹ ETF VNDiamond', category: 'Quỹ ETF', qty: 3100, avgPrice: 26200, currentPrice: 31580, targetWeight: 8 },
+                    { symbol: 'TCB-BOND', name: 'Trái phiếu Techcombank', category: 'Trái phiếu & Vàng', qty: 1850, avgPrice: 100000, currentPrice: 108200, targetWeight: 16 },
+                    { symbol: 'DOJI-9999', name: 'Vàng nhẫn 9999 (Chỉ)', category: 'Trái phiếu & Vàng', qty: 13.5, avgPrice: 7150000, currentPrice: 8320740, targetWeight: 9 },
+                    { symbol: 'VCB-SAV', name: 'Tiền gửi kỳ hạn 6T', category: 'Tiền gửi', qty: 187500, avgPrice: 960, currentPrice: 1000, targetWeight: 15 }
+                ],
+                perfSeries: {
+                    '1M': { labels: ['T1', 'T2', 'T3', 'T4'], actual: [0, 1.1, 2.3, 3.2], bench: [0, 0.8, 1.6, 2.4] },
+                    '3M': { labels: ['Thg 9', 'Thg 10', 'Thg 11'], actual: [0, 4.8, 8.9], bench: [0, 3.9, 7.2] },
+                    '6M': { labels: ['T6', 'T7', 'T8', 'T9', 'T10', 'T11'], actual: [0, 2.4, 5.1, 7.9, 10.4, 12.8], bench: [0, 1.9, 4.2, 6.5, 8.8, 10.9] },
+                    '1Y': { labels: ['T12', 'T02', 'T04', 'T06', 'T08', 'T10', 'T11'], actual: [0, 3.2, 6.8, 9.5, 12.6, 15.1, 17.4], bench: [0, 2.5, 5.4, 7.8, 10.5, 13.2, 15.3] },
+                    'ALL': { labels: ['2023', '2024', '2025', '2026'], actual: [0, 14.5, 31.2, 52.8], bench: [0, 12.0, 26.4, 44.5] }
+                }
+            },
+            dividend: {
+                id: 'dividend',
+                name: 'Cổ tức Thụ động',
+                badgeText: 'Đang dùng mẫu: Cổ tức Thụ động (Wealth Classic)',
+                investorName: 'Trần Minh Quân',
+                description: 'Phong cách quản lý gia sản cổ điển (Warm Ivory & Navy), tập trung vào cổ phiếu blue-chip trả cổ tức tiền mặt đều đặn và trái phiếu doanh nghiệp đầu ngành.',
+                accentColor: '#1d4ed8', // Blue 700
+                bodyLightBg: 'bg-ivory-50',
+                yieldRate: '7,6%',
+                targets: {
+                    'Cổ phiếu VN': 35,
+                    'Quỹ ETF': 10,
+                    'Trái phiếu & Vàng': 40,
+                    'Tiền gửi': 15
+                },
+                initialHoldings: [
+                    { symbol: 'VNM', name: 'CTCP Sữa Việt Nam', category: 'Cổ phiếu VN', qty: 3200, avgPrice: 63000, currentPrice: 68500, targetWeight: 15 },
+                    { symbol: 'REE', name: 'Cơ Điện Lạnh REE', category: 'Cổ phiếu VN', qty: 2400, avgPrice: 56000, currentPrice: 66250, targetWeight: 11 },
+                    { symbol: 'GAS', name: 'Tổng Công ty Khí VN', category: 'Cổ phiếu VN', qty: 1800, avgPrice: 68000, currentPrice: 73500, targetWeight: 9 },
+                    { symbol: 'FUEVFVND', name: 'Quỹ ETF VNDiamond', category: 'Quỹ ETF', qty: 4600, avgPrice: 27000, currentPrice: 31580, targetWeight: 10 },
+                    { symbol: 'TCB-BOND', name: 'Trái phiếu Techcombank', category: 'Trái phiếu & Vàng', qty: 4100, avgPrice: 100000, currentPrice: 108500, targetWeight: 30 },
+                    { symbol: 'SJC-9999', name: 'Vàng miếng SJC (Chỉ)', category: 'Trái phiếu & Vàng', qty: 17.5, avgPrice: 7200000, currentPrice: 8400000, targetWeight: 10 },
+                    { symbol: 'VCB-SAV', name: 'Tiền gửi lĩnh lãi quý', category: 'Tiền gửi', qty: 218000, avgPrice: 950, currentPrice: 1000, targetWeight: 15 }
+                ],
+                perfSeries: {
+                    '1M': { labels: ['T1', 'T2', 'T3', 'T4'], actual: [0, 0.7, 1.4, 2.1], bench: [0, 0.6, 1.2, 1.8] },
+                    '3M': { labels: ['Thg 9', 'Thg 10', 'Thg 11'], actual: [0, 3.1, 6.2], bench: [0, 2.8, 5.5] },
+                    '6M': { labels: ['T6', 'T7', 'T8', 'T9', 'T10', 'T11'], actual: [0, 1.8, 3.6, 5.5, 7.4, 9.4], bench: [0, 1.5, 3.1, 4.8, 6.5, 8.2] },
+                    '1Y': { labels: ['T12', 'T02', 'T04', 'T06', 'T08', 'T10', 'T11'], actual: [0, 2.2, 4.5, 6.9, 9.4, 11.8, 14.2], bench: [0, 1.9, 3.9, 6.0, 8.1, 10.2, 12.5] },
+                    'ALL': { labels: ['2023', '2024', '2025', '2026'], actual: [0, 11.8, 25.4, 41.6], bench: [0, 10.5, 22.8, 36.9] }
+                }
+            },
+            conservative: {
+                id: 'conservative',
+                name: 'Tích lũy Hưu trí An toàn',
+                badgeText: 'Đang dùng mẫu: Tích lũy Hưu trí An toàn',
+                investorName: 'Lê Thu Hà',
+                description: 'Thiết kế tối giản, độ tương phản cao ưu tiên bảo toàn vốn gốc và chống lạm phát: 50% Trái phiếu & Vàng, 30% Tiền gửi kỳ hạn, 20% Quỹ chỉ số ETF.',
+                accentColor: '#4f46e5', // Indigo 600
+                bodyLightBg: 'bg-slate-100/70',
+                yieldRate: '6,4%',
+                targets: {
+                    'Cổ phiếu VN': 0,
+                    'Quỹ ETF': 20,
+                    'Trái phiếu & Vàng': 50,
+                    'Tiền gửi': 30
+                },
+                initialHoldings: [
+                    { symbol: 'E1VFVN30', name: 'Quỹ ETF VFMVN30', category: 'Quỹ ETF', qty: 11500, avgPrice: 20100, currentPrice: 23400, targetWeight: 20 },
+                    { symbol: 'TCB-BOND', name: 'Trái phiếu Techcombank', category: 'Trái phiếu & Vàng', qty: 4200, avgPrice: 100000, currentPrice: 108200, targetWeight: 34 },
+                    { symbol: 'DOJI-9999', name: 'Vàng nhẫn 9999 (Chỉ)', category: 'Trái phiếu & Vàng', qty: 26.0, avgPrice: 7100000, currentPrice: 8320000, targetWeight: 16 },
+                    { symbol: 'VCB-SAV', name: 'Tiền gửi tiết kiệm 12T', category: 'Tiền gửi', qty: 405000, avgPrice: 940, currentPrice: 1000, targetWeight: 30 }
+                ],
+                perfSeries: {
+                    '1M': { labels: ['T1', 'T2', 'T3', 'T4'], actual: [0, 0.5, 1.0, 1.5], bench: [0, 0.45, 0.9, 1.35] },
+                    '3M': { labels: ['Thg 9', 'Thg 10', 'Thg 11'], actual: [0, 2.2, 4.4], bench: [0, 2.0, 4.0] },
+                    '6M': { labels: ['T6', 'T7', 'T8', 'T9', 'T10', 'T11'], actual: [0, 1.3, 2.6, 3.9, 5.3, 6.7], bench: [0, 1.2, 2.4, 3.6, 4.8, 6.1] },
+                    '1Y': { labels: ['T12', 'T02', 'T04', 'T06', 'T08', 'T10', 'T11'], actual: [0, 1.7, 3.4, 5.2, 7.0, 8.9, 10.8], bench: [0, 1.5, 3.1, 4.7, 6.3, 8.0, 9.6] },
+                    'ALL': { labels: ['2023', '2024', '2025', '2026'], actual: [0, 9.2, 19.5, 31.4], bench: [0, 8.5, 18.0, 28.8] }
+                }
+            }
+        };
+
+        let currentTemplateId = 'balanced';
+        let currentTimeframe = '1Y';
+        let holdings = JSON.parse(JSON.stringify(TEMPLATES.balanced.initialHoldings));
+        let perfChart = null;
+        let allocChart = null;
+
+        // Định dạng tiền tệ VNĐ
+        function formatVND(val) {
+            return Math.round(val).toLocaleString('vi-VN') + ' ₫';
+        }
+
+        // Hiển thị thông báo Toast
+        function showToast(msg) {
+            const container = document.getElementById('toast-container');
+            const el = document.createElement('div');
+            el.className = 'bg-slate-900 dark:bg-slate-800 text-white border border-slate-700 px-4 py-3 rounded-xl shadow-lg text-xs font-medium flex items-center gap-2 transition-all duration-300 translate-y-2 opacity-0';
+            el.innerHTML = `<i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i><span>${msg}</span>`;
+            container.appendChild(el);
+            lucide.createIcons();
+            requestAnimationFrame(() => el.classList.remove('translate-y-2', 'opacity-0'));
+            setTimeout(() => {
+                el.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => el.remove(), 300);
+            }, 3000);
+        }
+
+        // Chuyển đổi Mẫu Thiết kế & Chiến lược
+        function switchTemplate(templateId) {
+            currentTemplateId = templateId;
+            const tpl = TEMPLATES[templateId];
+            holdings = JSON.parse(JSON.stringify(tpl.initialHoldings));
+
+            // Cập nhật giao diện & thông tin mẫu
+            const body = document.getElementById('app-body');
+            body.classList.remove('bg-slate-50', 'bg-ivory-50', 'bg-slate-100/70');
+            body.classList.add(tpl.bodyLightBg);
+
+            document.getElementById('active-template-badge').innerHTML = `<i data-lucide="sparkles" class="w-3.5 h-3.5"></i> ${tpl.badgeText}`;
+            document.getElementById('investor-profile-title').textContent = tpl.investorName;
+            document.getElementById('template-description').textContent = tpl.description;
+            document.getElementById('header-template-select').value = templateId;
+
+            // Cập nhật màu nhấn (Accent Color) cho các nút chính
+            const logoBox = document.getElementById('brand-logo-box');
+            const ctaBtn = document.getElementById('primary-cta-btn');
+            const legendDot = document.getElementById('chart-legend-dot');
+
+            logoBox.style.backgroundColor = tpl.accentColor;
+            ctaBtn.style.backgroundColor = tpl.accentColor;
+            legendDot.style.backgroundColor = tpl.accentColor;
+
+            // Cập nhật trạng thái active cho 3 nút Pills
+            document.querySelectorAll('.tpl-pill').forEach(btn => {
+                btn.className = 'tpl-pill px-3.5 py-2 rounded-lg text-xs font-semibold text-left sm:text-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer';
+            });
+            const activePill = document.getElementById(`tpl-btn-${templateId}`);
+            activePill.className = 'tpl-pill px-3.5 py-2 rounded-lg text-xs font-semibold text-left sm:text-center transition-all cursor-pointer bg-white dark:bg-slate-950 text-slate-900 dark:text-white shadow-sm ring-1 ring-slate-200 dark:ring-slate-700';
+
+            updateDashboard();
+            showToast(`Đã áp dụng "${tpl.name}"`);
+        }
+
+        // Khôi phục dữ liệu gốc của mẫu hiện tại
+        function resetCurrentTemplate() {
+            const tpl = TEMPLATES[currentTemplateId];
+            holdings = JSON.parse(JSON.stringify(tpl.initialHoldings));
+            updateDashboard();
+            showToast(`Đã khôi phục dữ liệu gốc của mẫu "${tpl.name}"`);
+        }
+
+        // Tự động tái cân bằng danh mục khớp 100% với tỷ trọng mục tiêu của mẫu
+        function rebalanceToTemplate() {
+            const tpl = TEMPLATES[currentTemplateId];
+            const totalValue = holdings.reduce((sum, h) => sum + h.qty * h.currentPrice, 0);
+            if (totalValue <= 0) return;
+
+            // Nhóm các tài sản hiện có theo phân loại
+            const categories = ['Cổ phiếu VN', 'Quỹ ETF', 'Trái phiếu & Vàng', 'Tiền gửi'];
+            categories.forEach(cat => {
+                const targetCatPct = tpl.targets[cat] || 0;
+                const targetCatVal = (targetCatPct / 100) * totalValue;
+                const catItems = holdings.filter(h => h.category === cat);
+
+                if (catItems.length > 0) {
+                    const currentCatVal = catItems.reduce((s, i) => s + i.qty * i.currentPrice, 0);
+                    catItems.forEach(item => {
+                        const shareInCat = currentCatVal > 0 ? (item.qty * item.currentPrice) / currentCatVal : (1 / catItems.length);
+                        const newTargetVal = targetCatVal * shareInCat;
+                        item.qty = Number((newTargetVal / item.currentPrice).toFixed(2));
+                    });
+                }
+            });
+
+            updateDashboard();
+            showToast(`Đã mô phỏng tái cân bằng khớp chuẩn "${tpl.name}"!`);
+        }
+
+        // Cập nhật toàn bộ KPI, Biểu đồ và Bảng
+        function updateDashboard() {
+            const tpl = TEMPLATES[currentTemplateId];
+            let totalCost = 0;
+            let totalValue = 0;
+
+            const catValues = {
+                'Cổ phiếu VN': 0,
+                'Quỹ ETF': 0,
+                'Trái phiếu & Vàng': 0,
+                'Tiền gửi': 0
+            };
+
+            holdings.forEach(h => {
+                const cost = h.qty * h.avgPrice;
+                const val = h.qty * h.currentPrice;
+                totalCost += cost;
+                totalValue += val;
+                if (catValues[h.category] !== undefined) {
+                    catValues[h.category] += val;
+                }
+            });
+
+            const netProfit = totalValue - totalCost;
+            const profitPct = totalCost > 0 ? ((netProfit / totalCost) * 100).toFixed(1) : '0.0';
+            const isPositive = netProfit >= 0;
+
+            // 1. Cập nhật KPI Cards
+            document.getElementById('kpi-total-value').textContent = formatVND(totalValue);
+            document.getElementById('kpi-cost-basis').textContent = formatVND(totalCost);
+
+            const profitEl = document.getElementById('kpi-net-profit');
+            profitEl.textContent = `${isPositive ? '+' : ''}${formatVND(netProfit)}`;
+            profitEl.className = `text-2xl font-bold font-mono tabular-nums tracking-tight ${isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`;
+
+            const pctEl = document.getElementById('kpi-profit-pct');
+            pctEl.textContent = `${isPositive ? '+' : ''}${profitPct.replace('.', ',')}%`;
+            pctEl.className = `inline-flex items-center px-2 py-0.5 rounded font-mono font-semibold ${
+                isPositive ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400' : 'bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-400'
+            }`;
+
+            // Thu nhập thụ động
+            const yieldNum = parseFloat(tpl.yieldRate.replace(',', '.')) / 100;
+            document.getElementById('kpi-yield-rate').textContent = tpl.yieldRate;
+            document.getElementById('kpi-passive-income').textContent = formatVND(totalValue * yieldNum);
+
+            // Tính độ lệch tối đa so với mẫu chuẩn
+            let maxDrift = 0;
+            Object.keys(catValues).forEach(cat => {
+                const actualPct = totalValue > 0 ? (catValues[cat] / totalValue) * 100 : 0;
+                const targetPct = tpl.targets[cat] || 0;
+                const drift = Math.abs(actualPct - targetPct);
+                if (drift > maxDrift) maxDrift = drift;
+            });
+
+            const driftStatusEl = document.getElementById('kpi-drift-status');
+            if (maxDrift <= 3.5) {
+                driftStatusEl.textContent = 'Cân bằng tốt';
+                driftStatusEl.className = 'mt-3 text-xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400';
+            } else {
+                driftStatusEl.textContent = 'Cần tái cân bằng nhẹ';
+                driftStatusEl.className = 'mt-3 text-xl font-bold tracking-tight text-amber-600 dark:text-amber-400';
+            }
+            document.getElementById('kpi-drift-detail').textContent = `Độ lệch tối đa: ${maxDrift.toFixed(1).replace('.', ',')}%`;
+
+            // 2. Cập nhật Biểu đồ Tăng trưởng & Phân bổ
+            renderPerformanceChart();
+            renderAllocationAndRebalancing(catValues, totalValue);
+
+            // 3. Cập nhật Bảng Tài Sản
+            renderHoldingsTable(totalValue);
+            lucide.createIcons();
+        }
+
+        // Vẽ Biểu đồ Đường (Performance Chart)
+        function renderPerformanceChart() {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            const isDark = document.documentElement.classList.contains('dark');
+            const tpl = TEMPLATES[currentTemplateId];
+            const series = tpl.perfSeries[currentTimeframe];
+
+            const gridColor = isDark ? 'rgba(148, 163, 184, 0.1)' : 'rgba(148, 163, 184, 0.18)';
+            const textColor = isDark ? '#94a3b8' : '#64748b';
+
+            if (perfChart) perfChart.destroy();
+
+            const gradient = ctx.createLinearGradient(0, 0, 0, 280);
+            gradient.addColorStop(0, tpl.accentColor + '33');
+            gradient.addColorStop(1, tpl.accentColor + '00');
+
+            perfChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: series.labels,
+                    datasets: [
+                        {
+                            label: 'Danh mục thực tế (%)',
+                            data: series.actual,
+                            borderColor: tpl.accentColor,
+                            backgroundColor: gradient,
+                            borderWidth: 2.5,
+                            pointBackgroundColor: tpl.accentColor,
+                            pointRadius: 3.5,
+                            pointHoverRadius: 6,
+                            fill: true,
+                            tension: 0.35
+                        },
+                        {
+                            label: `Mẫu chuẩn: ${tpl.name} (%)`,
+                            data: series.bench,
+                            borderColor: '#94a3b8',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            pointRadius: 2.5,
+                            fill: false,
+                            tension: 0.35
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: isDark ? '#0f172a' : '#ffffff',
+                            titleColor: isDark ? '#f8fafc' : '#0f172a',
+                            bodyColor: isDark ? '#cbd5e1' : '#334155',
+                            borderColor: isDark ? '#334155' : '#e2e8f0',
+                            borderWidth: 1,
+                            padding: 10,
+                            cornerRadius: 10,
+                            callbacks: {
+                                label: ctx => ` ${ctx.dataset.label}: +${ctx.parsed.y}%`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: textColor, font: { size: 11 } } },
+                        y: {
+                            grid: { color: gridColor },
+                            ticks: {
+                                color: textColor,
+                                font: { size: 11, family: '"JetBrains Mono", monospace' },
+                                callback: v => '+' + v + '%'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Vẽ Biểu đồ Tròn & Thanh so sánh Tỷ trọng Thực tế vs Mẫu chuẩn
+        function renderAllocationAndRebalancing(catValues, totalValue) {
+            const ctx = document.getElementById('allocationChart').getContext('2d');
+            const isDark = document.documentElement.classList.contains('dark');
+            const tpl = TEMPLATES[currentTemplateId];
+
+            const categories = ['Cổ phiếu VN', 'Quỹ ETF', 'Trái phiếu & Vàng', 'Tiền gửi'];
+            const colors = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6'];
+            const dataVals = categories.map(c => catValues[c] || 0);
+
+            if (allocChart) allocChart.destroy();
+
+            allocChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: categories,
+                    datasets: [{
+                        data: dataVals,
+                        backgroundColor: colors,
+                        borderColor: isDark ? '#0f172a' : '#ffffff',
+                        borderWidth: 3,
+                        hoverOffset: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '72%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: isDark ? '#0f172a' : '#ffffff',
+                            titleColor: isDark ? '#f8fafc' : '#0f172a',
+                            bodyColor: isDark ? '#cbd5e1' : '#334155',
+                            borderColor: isDark ? '#334155' : '#e2e8f0',
+                            borderWidth: 1,
+                            padding: 10,
+                            cornerRadius: 10,
+                            callbacks: {
+                                label: ctx => {
+                                    const pct = totalValue > 0 ? ((ctx.parsed / totalValue) * 100).toFixed(1) : 0;
+                                    return ` ${pct}% (${formatVND(ctx.parsed)})`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Render thanh tiến trình Thực tế vs. Mục tiêu Mẫu
+            const barsContainer = document.getElementById('rebalancing-bars');
+            barsContainer.innerHTML = '';
+
+            categories.forEach((cat, idx) => {
+                const actualPct = totalValue > 0 ? (catValues[cat] / totalValue) * 100 : 0;
+                const targetPct = tpl.targets[cat] || 0;
+                const diff = actualPct - targetPct;
+                const diffStr = (diff >= 0 ? '+' : '') + diff.toFixed(1) + '%';
+
+                const row = document.createElement('div');
+                row.className = 'space-y-1';
+                row.innerHTML = `
+                    <div class="flex items-center justify-between text-xs">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${colors[idx]}"></span>
+                            <span class="font-medium text-slate-700 dark:text-slate-300">${cat}</span>
+                        </div>
+                        <div class="font-mono tabular-nums text-[11px]">
+                            <strong class="text-slate-900 dark:text-white">${actualPct.toFixed(1)}%</strong>
+                            <span class="text-slate-400"> / Mẫu ${targetPct}%</span>
+                            <span class="ml-1 ${Math.abs(diff) <= 2 ? 'text-slate-400' : (diff > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-blue-600 dark:text-blue-400')}">(${diffStr})</span>
+                        </div>
+                    </div>
+                    <div class="relative w-full h-2 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                        <div class="h-full rounded-full transition-all duration-300" style="width: ${Math.min(actualPct, 100)}%; background-color: ${colors[idx]}"></div>
+                        <!-- Vạch đánh dấu tỷ trọng mẫu -->
+                        <div class="absolute top-0 bottom-0 w-0.5 bg-slate-900 dark:bg-white z-10" style="left: ${Math.min(targetPct, 99)}%" title="Mục tiêu mẫu: ${targetPct}%"></div>
+                    </div>
+                `;
+                barsContainer.appendChild(row);
+            });
+        }
+
+        // Render Bảng Danh Sách Tài Sản
+        function renderHoldingsTable(totalValueOverride = null) {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const catFilter = document.getElementById('category-filter').value;
+            const totalValue = totalValueOverride || holdings.reduce((s, h) => s + h.qty * h.currentPrice, 0);
+
+            const filtered = holdings.filter(h => {
+                const matchText = h.symbol.toLowerCase().includes(query) || h.name.toLowerCase().includes(query);
+                const matchCat = catFilter === 'ALL' || h.category === catFilter;
+                return matchText && matchCat;
+            });
+
+            const tbody = document.getElementById('holdings-tbody');
+            tbody.innerHTML = '';
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" class="py-8 text-center text-xs text-slate-400">Không tìm thấy tài sản nào phù hợp.</td></tr>`;
+                return;
+            }
+
+            filtered.forEach(item => {
+                const marketVal = item.qty * item.currentPrice;
+                const costVal = item.qty * item.avgPrice;
+                const pnl = marketVal - costVal;
+                const pnlPct = costVal > 0 ? ((pnl / costVal) * 100).toFixed(1) : '0.0';
+                const actualWeight = totalValue > 0 ? ((marketVal / totalValue) * 100).toFixed(1) : '0.0';
+                const targetWeight = item.targetWeight || 0;
+                const isProfit = pnl >= 0;
+
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50/90 dark:hover:bg-slate-800/40 transition-colors';
+                tr.innerHTML = `
+                    <td class="py-3.5 px-3">
+                        <div class="font-bold font-mono text-slate-900 dark:text-white">${item.symbol}</div>
+                        <div class="text-xs text-slate-500 dark:text-slate-400">${item.name}</div>
+                    </td>
+                    <td class="py-3.5 px-3">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700">
+                            ${item.category}
+                        </span>
+                    </td>
+                    <td class="py-3.5 px-3 text-right font-mono tabular-nums text-slate-700 dark:text-slate-300">
+                        ${item.qty.toLocaleString('vi-VN')}
+                    </td>
+                    <td class="py-3.5 px-3 text-right font-mono tabular-nums text-slate-500 dark:text-slate-400">
+                        ${formatVND(item.avgPrice)}
+                    </td>
+                    <td class="py-3.5 px-3 text-right font-mono tabular-nums font-medium text-slate-900 dark:text-white">
+                        ${formatVND(item.currentPrice)}
+                    </td>
+                    <td class="py-3.5 px-3 text-right font-mono tabular-nums font-semibold text-slate-900 dark:text-white">
+                        ${formatVND(marketVal)}
+                    </td>
+                    <td class="py-3.5 px-3 text-right font-mono tabular-nums">
+                        <div class="font-semibold ${isProfit ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">
+                            ${isProfit ? '+' : ''}${pnlPct}%
+                        </div>
+                        <div class="text-[11px] text-slate-400">${isProfit ? '+' : ''}${formatVND(pnl)}</div>
+                    </td>
+                    <td class="py-3.5 px-3 text-right font-mono tabular-nums">
+                        <div class="text-xs font-semibold text-slate-900 dark:text-white">
+                            ${actualWeight}% <span class="text-slate-400 font-normal">/ ${targetWeight}%</span>
+                        </div>
+                        <div class="w-20 ml-auto mt-1 h-1.5 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                            <div class="h-full bg-emerald-500 rounded-full" style="width: ${Math.min(actualWeight * 2, 100)}%"></div>
+                        </div>
+                    </td>
+                    <td class="py-3.5 px-3 text-center">
+                        <button onclick="deleteHolding('${item.symbol}')" title="Xóa tài sản khỏi danh mục" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors cursor-pointer">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            lucide.createIcons();
+        }
+
+        // Xóa tài sản
+        function deleteHolding(symbol) {
+            holdings = holdings.filter(h => h.symbol !== symbol);
+            updateDashboard();
+            showToast(`Đã xóa mã ${symbol} khỏi danh mục`);
+        }
+
+        // Chọn khung thời gian biểu đồ
+        function setTimeframe(tf, btn) {
+            currentTimeframe = tf;
+            document.querySelectorAll('.tf-btn').forEach(b => {
+                b.className = 'tf-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer';
+            });
+            btn.className = 'tf-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-white dark:bg-slate-950 text-emerald-600 dark:text-emerald-400 shadow-sm cursor-pointer';
+            renderPerformanceChart();
+        }
+
+        // Chuyển Dark / Light Mode
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            updateDashboard();
+        }
+
+        // Điều khiển Modal
+        function openModal() {
+            const modal = document.getElementById('tx-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('tx-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.getElementById('tx-form').reset();
+        }
+
+        // Xử lý thêm/mô phỏng giao dịch
+        function handleTransactionSubmit(e) {
+            e.preventDefault();
+            const type = document.getElementById('form-type').value;
+            const category = document.getElementById('form-category').value;
+            const symbol = document.getElementById('form-symbol').value.trim().toUpperCase();
+            const name = document.getElementById('form-name').value.trim();
+            const qty = parseFloat(document.getElementById('form-qty').value);
+            const price = parseFloat(document.getElementById('form-price').value);
+
+            const idx = holdings.findIndex(h => h.symbol === symbol);
+
+            if (type === 'BUY') {
+                if (idx > -1) {
+                    const item = holdings[idx];
+                    const totalOld = item.qty * item.avgPrice;
+                    const totalNew = qty * price;
+                    item.qty = Number((item.qty + qty).toFixed(2));
+                    item.avgPrice = (totalOld + totalNew) / item.qty;
+                    item.currentPrice = price;
+                } else {
+                    holdings.unshift({
+                        symbol,
+                        name,
+                        category,
+                        qty,
+                        avgPrice: price,
+                        currentPrice: Math.round(price * 1.03),
+                        targetWeight: 5
+                    });
+                }
+                showToast(`Đã thêm giao dịch MUA ${qty} ${symbol}`);
+            } else {
+                if (idx > -1) {
+                    const item = holdings[idx];
+                    if (qty >= item.qty) {
+                        holdings.splice(idx, 1);
+                    } else {
+                        item.qty = Number((item.qty - qty).toFixed(2));
+                        item.currentPrice = price;
+                    }
+                    showToast(`Đã ghi nhận giao dịch BÁN ${qty} ${symbol}`);
+                } else {
+                    showToast(`Mã ${symbol} chưa có trong danh mục để bán`);
+                    return;
+                }
+            }
+
+            closeModal();
+            updateDashboard();
+        }
+
+        // Khởi tạo trang
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            updateDashboard();
+        });
+    </script>
+</body>
+</html>
